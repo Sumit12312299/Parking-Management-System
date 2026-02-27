@@ -1,0 +1,108 @@
+{% load static %}
+<link rel="stylesheet" href="{% static 'css/style.css' %}">
+<!DOCTYPE html>
+<html>
+<head>
+    <title>ParkKaro</title>
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest"></script>
+</head>
+<body>
+
+    <div class="navbar">
+        <div class="logo">ParkKaro</div>
+    
+        <div class="nav-links">
+            {% if user.is_authenticated %}
+                <a href="{% url 'dashboard' %}">Dashboard</a>
+                <a href="{% url 'booking_history' %}">My Bookings</a>
+                <a href="{% url 'logout' %}">Logout</a>
+            {% else %}
+                <a href="{% url 'login' %}">Login</a>
+                <a href="{% url 'register' %}">Register</a>
+            {% endif %}
+        </div>
+    </div>
+
+<div class="container">
+    {% block content %}{% endblock %}
+</div>
+<script src="https://unpkg.com/lucide@latest"></script>
+<script>
+  lucide.createIcons();
+</script>
+
+<footer class="footer">
+    <div class="footer-container">
+
+        <div class="footer-brand">
+            <h3>ParkKaro</h3>
+            <p>
+                Smart parking solution for malls, colleges, offices and more.
+                Book your slot before you arrive.
+            </p>
+        </div>
+00
+        <div class="footer-links">
+            <h4>Quick Links</h4>
+            <a href="{% url 'dashboard' %}">Home</a>
+            <a href="{% url 'explore_locations' %}">Browse Locations</a>
+            <a href="{% url 'booking_history' %}">My Bookings</a>
+        </div>
+
+        <div class="footer-contact">
+            <h4>Contact</h4>
+            <p>Email: support@parkkaro.com</p>
+            <p>Phone: +91 98765 43210</p>
+        </div>
+
+    </div>
+
+    <div class="footer-bottom">
+        © 2026 ParkKaro. All rights reserved.
+    </div>
+</footer>
+<script>
+    function revealOnScroll() {
+        const reveals = document.querySelectorAll(".reveal");
+
+        reveals.forEach((element) => {
+            const windowHeight = window.innerHeight;
+            const elementTop = element.getBoundingClientRect().top;
+            const revealPoint = 100;
+
+            if (elementTop < windowHeight - revealPoint) {
+                element.classList.add("active");
+            }
+        });
+    }
+
+    window.addEventListener("scroll", revealOnScroll);
+    window.addEventListener("load", revealOnScroll);
+</script>
+<script>
+    const counters = document.querySelectorAll('.counter');
+    
+    counters.forEach(counter => {
+        counter.innerText = '0';
+    
+        const updateCounter = () => {
+            const target = +counter.getAttribute('data-target');
+            const current = +counter.innerText;
+    
+            const increment = target / 100;
+    
+            if(current < target){
+                counter.innerText = `${Math.ceil(current + increment)}`;
+                setTimeout(updateCounter, 20);
+            } else {
+                counter.innerText = target;
+            }
+        };
+    
+        updateCounter();
+    });
+    </script>
+</body>
+</html>

@@ -1,0 +1,114 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<div class="container">
+  
+    <section class="hero">
+
+    <div class="hero-left reveal">
+        <h1>Parking Made <span>Effortless.</span></h1>
+        <p>
+            Find and book parking spots at hotels, malls, restaurants
+            and more. Secure your space before you even arrive.
+        </p>
+
+        <div class="hero-buttons">
+            <a href="{% url 'explore_locations' %}" class="btn-primary">
+                Get Started Now
+            </a>
+
+            <a href="{% url 'explore_locations' %}" class="btn-outline">
+                Browse Locations
+            </a>
+        </div>
+    </div>
+
+
+    <div class="hero-right stats-box">
+
+        <div class="stat">
+            <i data-lucide="parking-circle"></i>
+            <h2 class="counter" data-target="1200">0</h2>
+            <p>Active Slots</p>
+        </div>
+    
+        <div class="stat">
+            <i data-lucide="map-pin"></i>
+            <h2 class="counter" data-target="50">0</h2>
+            <p>Locations</p>
+        </div>
+    
+        <div class="stat">
+            <i data-lucide="calendar-check"></i>
+            <h2 class="counter" data-target="10000">0</h2>
+            <p>Bookings</p>
+        </div>
+    
+        <div class="stat">
+            <i data-lucide="smile"></i>
+            <h2 class="counter" data-target="99">0</h2>
+            <p>Customer Satisfaction</p>
+        </div>
+    
+    </div>
+
+</div>
+
+</section>
+
+<section class="why-section reveal">
+    <div class="why-container">
+        <h2 class="why-title">Why Choose ParkKaro?</h2>
+        <div class="why-underline"></div>
+
+        <div class="why-grid">
+
+            <div class="why-card">
+                <div class="icon-box">
+                    <i data-lucide="shield-check"></i>
+                </div>
+                <h3>Secure Booking</h3>
+                <p>Your spot is guaranteed once booked. No more driving around in circles.</p>
+            </div>
+
+            <div class="why-card">
+                <div class="icon-box">
+                    <i data-lucide="map-pin"></i>
+                </div>
+                <h3>Prime Locations</h3>
+                <p>Access parking at popular malls, colleges and offices near you.</p>
+            </div>
+
+            <div class="why-card">
+                <div class="icon-box">
+                    <i data-lucide="clock"></i>
+                </div>
+                <h3>Real-time Updates</h3>
+                <p>See live availability and manage bookings on the go.</p>
+            </div>
+
+        </div>
+    </div>
+</section>
+ 
+<br>
+    <h2 style="margin-bottom:30px;">Available Locations</h2>
+
+    <div class="card-grid reveal">
+        {% for location in locations %}
+        <div class="card">
+            <h3>{{ location.name }}</h3>
+            <p>
+                {{ location.location_type }} •
+                {{ location.available_slots }} slots available
+            </p>
+            <a href="{% url 'view_slots' location.id %}" class="btn-outline">
+                View Slots
+            </a>
+        </div>
+        {% endfor %}
+    </div>
+
+</div>
+
+{% endblock %}

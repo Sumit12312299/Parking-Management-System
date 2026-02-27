@@ -1,0 +1,38 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<div class="booking-wrapper reveal">
+    <div class="booking-card">
+
+        <h2>Book Slot {{ slot.slot_number }}</h2>
+        <p class="sub-text">Select date and time to reserve your parking.</p>
+
+        <form method="POST">
+            {% csrf_token %}
+
+            <div class="form-group">
+                <label>Booking Date</label>
+                {{ form.booking_date }}
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Start Time</label>
+                    {{ form.start_time }}
+                </div>
+
+                <div class="form-group">
+                    <label>End Time</label>
+                    {{ form.end_time }}
+                </div>
+            </div>
+
+            <button type="submit" class="btn-book">
+                Calculate & Proceed
+            </button>
+        </form>
+
+    </div>
+</div>
+
+{% endblock %}
