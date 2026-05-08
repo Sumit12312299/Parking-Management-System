@@ -11,7 +11,10 @@
 <body>
 
     <div class="navbar">
-        <div class="logo">ParkKaro</div>
+        <div class="logo" style="display:flex; align-items:center; gap:8px;">
+            <i data-lucide="car-front" style="color:#22c55e; width:28px; height:28px;"></i>
+            <span style="font-weight:800; tracking:-1px;">ParkKaro</span>
+        </div>
     
         <div class="nav-links">
             {% if user.is_authenticated %}
@@ -33,17 +36,24 @@
   lucide.createIcons();
 </script>
 
-<footer class="footer">
+<footer class="footer-premium">
     <div class="footer-container">
 
         <div class="footer-brand">
-            <h3>ParkKaro</h3>
-            <p>
-                Smart parking solution for malls, colleges, offices and more.
-                Book your slot before you arrive.
+            <div class="logo" style="display:flex; align-items:center; gap:8px; margin-bottom: 20px; font-size:24px; font-weight:800; color:white;">
+                <i data-lucide="car-front" style="color:#22c55e;"></i>
+                ParkKaro
+            </div>
+            <p style="color:#9ca3af; font-size:15px; line-height:1.6; max-width:300px;">
+                Smart parking solution for malls, colleges, offices and more. Book your spot before you arrive and save time.
             </p>
+            <div class="social-icons" style="display:flex; gap:15px; margin-top:20px;">
+                <a href="#" style="color:#9ca3af; transition:0.3s;"><i data-lucide="twitter" style="width:20px;"></i></a>
+                <a href="#" style="color:#9ca3af; transition:0.3s;"><i data-lucide="facebook" style="width:20px;"></i></a>
+                <a href="#" style="color:#9ca3af; transition:0.3s;"><i data-lucide="instagram" style="width:20px;"></i></a>
+            </div>
         </div>
-00
+
         <div class="footer-links">
             <h4>Quick Links</h4>
             <a href="{% url 'dashboard' %}">Home</a>
@@ -52,15 +62,19 @@
         </div>
 
         <div class="footer-contact">
-            <h4>Contact</h4>
-            <p>Email: support@parkkaro.com</p>
-            <p>Phone: +91 98765 43210</p>
+            <h4>Contact Us</h4>
+            <p style="display:flex; align-items:center; gap:10px; margin-bottom:10px; color:#9ca3af;"><i data-lucide="mail" style="width:16px; color:#22c55e;"></i> support@parkkaro.com</p>
+            <p style="display:flex; align-items:center; gap:10px; color:#9ca3af;"><i data-lucide="phone" style="width:16px; color:#22c55e;"></i> +91 98765 43210</p>
         </div>
 
     </div>
 
     <div class="footer-bottom">
-        © 2026 ParkKaro. All rights reserved.
+        <p>© 2026 ParkKaro. All rights reserved.</p>
+        <div class="bottom-links">
+            <a href="#">Privacy Policy</a>
+            <a href="#">Terms of Service</a>
+        </div>
     </div>
 </footer>
 <script>

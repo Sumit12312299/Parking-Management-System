@@ -1,0 +1,58 @@
+
+/* ========================================================
+   PREMIUM WHITE NAVBAR OVERRIDES
+   ======================================================== */
+
+.navbar {
+    height: 75px !important;
+    background: rgba(255, 255, 255, 0.90) !important;
+    backdrop-filter: blur(20px) !important;
+    -webkit-backdrop-filter: blur(20px) !important;
+    position: sticky !important;
+    top: 0 !important;
+    z-index: 1000 !important;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.05) !important;
+    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.03) !important;
+    color: #064e3b !important;
+    padding: 0 6% !important;
+}
+
+.navbar .logo {
+    color: #064e3b !important;
+    font-size: 24px !important;
+}
+
+.navbar .nav-links {
+    display: flex;
+    align-items: center;
+}
+
+.navbar .nav-links a {
+    color: #4b5563 !important;
+    font-weight: 600 !important;
+    margin-left: 30px !important;
+    font-size: 15px !important;
+}
+
+.navbar .nav-links a:hover {
+    color: #16a34a !important;
+}
+
+.navbar .nav-links a::after {
+    display: none !important; /* Remove underline */
+}
+
+/* Style the rightmost button (Login/Logout/Register) */
+.navbar .nav-links a:last-child {
+    background: #16a34a !important;
+    color: white !important;
+    padding: 10px 24px !important;
+    border-radius: 12px !important;
+    transition: all 0.3s ease !important;
+}
+
+.navbar .nav-links a:last-child:hover {
+    background: #15803d !important;
+    transform: translateY(-2px) !important;
+    box-shadow: 0 10px 20px rgba(22, 163, 74, 0.2) !important;
+}
