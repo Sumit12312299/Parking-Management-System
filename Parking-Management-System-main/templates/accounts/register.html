@@ -1,43 +1,410 @@
 {% extends 'base.html' %}
 {% block content %}
-<br>
-<div class="auth-wrapper reveal">
-    <div class="auth-card">
-        <h2>Create Account</h2>
-        <form method="POST">
-            {% csrf_token %}
-        
-            {% if form.errors %}
-                <div style="color: #B42318; margin-bottom:15px;">
-                    {{ form.errors }}
-                </div>
-            {% endif %}
-        
-            <label>Username</label>
-            {{ form.username }}
+
+<style>
+/* Override default container padding for full width split layout */
+.container {
+    padding: 0 !important;
+    max-width: 100% !important;
+}
+
+.split-auth {
+    display: flex;
+    min-height: calc(100vh - 75px);
+    background: #f4fbf6; /* Subtle green-white background instead of pure white */
+    padding: 30px; /* Gap from the screen edges */
+    gap: 30px; /* Gap between image and form */
+    box-sizing: border-box;
+}
+
+.split-left {
+    flex: 1;
+    background: linear-gradient(rgba(6, 78, 59, 0.45), rgba(6, 78, 59, 0.85)), url('https://images.unsplash.com/photo-1517524206127-48bbd363f3d7?q=80&w=2012&auto=format&fit=crop') center/cover no-repeat;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 60px;
+    position: relative;
+    border-radius: 30px; /* Premium rounded edges */
+    box-shadow: 0 20px 50px rgba(6, 78, 59, 0.15); /* Soft premium shadow */
+    overflow: hidden;
+}
+
+.split-left-content {
+    color: white;
+    max-width: 500px;
+    z-index: 2;
+    text-align: left;
+}
+
+.split-left-content h1 {
+    font-size: 52px;
+    font-weight: 800;
+    margin-bottom: 25px;
+    line-height: 1.15;
+    letter-spacing: -1px;
+}
+
+.split-left-content p {
+    font-size: 18px;
+    opacity: 0.95;
+    line-height: 1.7;
+    font-weight: 400;
+}
+
+.split-right {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+}
+
+.premium-auth-card {
+    width: 100%;
+    max-width: 440px;
+    background: white;
+    padding: 40px;
+    border-radius: 24px;
+    box-shadow: 0 20px 40px rgba(0,0,0,0.04);
+}
+
+.premium-auth-card h2 {
+    font-size: 32px;
+    color: #064e3b;
+    margin-bottom: 8px;
+    font-weight: 700;
+}
+
+.premium-auth-card .subtitle {
+    color: #6b7280;
+    margin-bottom: 25px;
+    font-size: 15px;
+}
+
+.premium-auth-card label {
+    display: block;
+    font-size: 14px;
+    font-weight: 600;
+    color: #374151;
+    margin-bottom: 6px;
+}
+
+.premium-auth-card input {
+    width: 100%;
+    padding: 12px 14px;
+    border-radius: 12px;
+    border: 1px solid #e5e7eb;
+    background: #f9fafb;
+    margin-bottom: 15px;
+    font-size: 15px;
+    transition: all 0.3s ease;
+    box-sizing: border-box;
+}
+
+.premium-auth-card input:focus {
+    outline: none;
+    border-color: #22c55e;
+    background: white;
+    box-shadow: 0 0 0 4px rgba(34, 197, 94, 0.1);
+}
+
+.premium-auth-card button {
+    width: 100%;
+    padding: 14px;
+    background: #22c55e;
+    color: white;
+    border: none;
+    border-radius: 12px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    margin-top: 10px;
+}
+
+.premium-auth-card button:hover {
+    background: #16a34a;
+    transform: translateY(-2px);
+    box-shadow: 0 10px 20px rgba(34, 197, 94, 0.2);
+}
+
+.premium-auth-card .bottom-link {
+    text-align: center;
+    margin-top: 25px;
+    color: #6b7280;
+    font-size: 15px;
+}
+
+.premium-auth-card .bottom-link a {
+    color: #22c55e;
+    text-decoration: none;
+    font-weight: 600;
+    transition: 0.2s;
+}
+
+.premium-auth-card .bottom-link a:hover {
+    color: #16a34a;
+}
+
+/* --- Premium Side-View Drive Animation --- */
+.premium-drive-animation {
+    position: relative;
+    width: 100%;
+    height: 40px;
+    margin-bottom: 15px;
+    overflow: hidden;
+}
+
+.road-track {
+    position: absolute;
+    bottom: 4px;
+    left: 0;
+    width: 100%;
+    height: 2px;
+    background: linear-gradient(90deg, transparent 0%, rgba(34, 197, 94, 0.5) 50%, transparent 100%);
+    border-radius: 2px;
+}
+
+.driving-car-icon {
+    position: absolute;
+    bottom: 4px;
+    color: #16a34a;
+    width: 28px;
+    height: 28px;
+    animation: smoothDrive 5s infinite cubic-bezier(0.4, 0, 0.2, 1);
+    filter: drop-shadow(0 4px 6px rgba(22, 163, 74, 0.3));
+}
+
+@keyframes smoothDrive {
+    0% { left: -40px; opacity: 0; }
+    15% { opacity: 1; }
+    85% { opacity: 1; }
+    100% { left: 100%; opacity: 0; }
+}
+
+/* --- GPay Style Loading Overlay --- */
+.payment-overlay {
+    position: absolute;
+    top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(255, 255, 255, 0.98);
+    z-index: 100;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    border-radius: 24px;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s ease;
+}
+
+.payment-overlay.active {
+    opacity: 1;
+    pointer-events: all;
+}
+
+.loader-spinner {
+    width: 48px; height: 48px;
+    border: 4px solid #f3f4f6;
+    border-top-color: #22c55e;
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin { 100% { transform: rotate(360deg); } }
+
+.success-checkmark {
+    width: 65px; height: 65px;
+    border-radius: 50%;
+    background: #22c55e;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    animation: popIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+    box-shadow: 0 10px 20px rgba(34, 197, 94, 0.3);
+}
+
+@keyframes popIn {
+    0% { transform: scale(0); opacity: 0; }
+    100% { transform: scale(1); opacity: 1; }
+}
+
+.loading-text {
+    margin-top: 18px;
+    font-weight: 600;
+    color: #4b5563;
+    font-size: 16px;
+    animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn { from{opacity:0;} to{opacity:1;} }
+
+@media(max-width: 900px) {
+    .split-auth {
+        flex-direction: column;
+    }
+    .split-left {
+        padding: 40px 20px;
+        min-height: 300px;
+    }
+    .split-left-content h1 {
+        font-size: 32px;
+    }
+}
+</style>
+
+<div class="split-auth">
+    <!-- Left Visual Side -->
+    <div class="split-left reveal">
+        <div class="split-left-content">
+            <h1>Smart Parking. <br>Simplified.</h1>
+            <p>Create your free account today and unlock instant access to premium parking zones, real-time slot tracking, and cashless e-payments. Parking has never been this seamless.</p>
+        </div>
+    </div>
+
+    <!-- Right Register Form Side -->
+    <div class="split-right">
+        <div class="premium-auth-card reveal" style="transition-delay: 0.2s; position: relative;">
             
-            <label>Email</label>
-            {{ form.email }}
-        
-            <label>Phone</label>
-            {{ form.phone }}
-        
-            <label>Password</label>
-            {{ form.password1 }}
-        
-            <label>Confirm Password</label>
-            {{ form.password2 }}
-        
-            <button type="submit">Register</button>
-        </form>
+            <!-- GPay Style Loading Overlay -->
+            <div class="payment-overlay" id="registerOverlay">
+                <!-- Spinner View -->
+                <div id="spinnerView" style="display:flex; flex-direction:column; align-items:center;">
+                    <div class="loader-spinner"></div>
+                    <div class="loading-text">Creating Account...</div>
+                </div>
+                <!-- Success View -->
+                <div id="successView" style="display:none; flex-direction:column; align-items:center;">
+                    <div class="success-checkmark">
+                        <i data-lucide="check" style="color:white; width:35px; height:35px;"></i>
+                    </div>
+                    <div class="loading-text" style="color:#16a34a; font-size: 18px;">Registration Successful!</div>
+                </div>
+            </div>
 
- 
+            <!-- Premium Side-View Car Animation -->
+            <div class="premium-drive-animation">
+                <div class="road-track"></div>
+                <i data-lucide="car" class="driving-car-icon"></i>
+            </div>
+            
+            <h2>Create Account</h2>
+            <p class="subtitle">Join ParkKaro and secure your spot.</p>
 
-        <p style="margin-top:20px; text-align:center;">
-            Already have an account?
-            <a href="{% url 'login' %}">Login</a>
-        </p>
+            <form method="POST" id="authForm">
+                {% csrf_token %}
+
+                {% if form.errors %}
+                    <div style="color: #B42318; margin-bottom:15px; font-size:14px; background: #fdecea; padding: 10px; border-radius: 8px;">
+                        {{ form.errors }}
+                    </div>
+                {% endif %}
+
+                <label>Username</label>
+                {{ form.username }}
+                
+                <label>Email</label>
+                {{ form.email }}
+            
+                <label>Phone</label>
+                {{ form.phone }}
+            
+                <label>Password</label>
+                {{ form.password1 }}
+            
+                <label>Confirm Password</label>
+                {{ form.password2 }}
+
+                <button type="submit">Create Account</button>
+            </form>
+
+            <p class="bottom-link">
+                Already have an account?
+                <a href="{% url 'login' %}">Login</a>
+            </p>
+        </div>
     </div>
 </div>
+
+<script>
+    function initializePlaceholders() {
+        document.querySelectorAll('.premium-auth-card input').forEach(input => {
+            if(!input.placeholder) {
+                if(input.name === 'username') input.placeholder = 'Choose a username';
+                if(input.name === 'email') input.placeholder = 'Enter your email';
+                if(input.name === 'phone') input.placeholder = 'Enter your phone number';
+                if(input.name === 'password1') input.placeholder = 'Create password';
+                if(input.name === 'password2') input.placeholder = 'Confirm password';
+            }
+        });
+    }
+    initializePlaceholders();
+
+    const form = document.getElementById('authForm');
+    const overlay = document.getElementById('registerOverlay');
+    const spinnerView = document.getElementById('spinnerView');
+    const successView = document.getElementById('successView');
+
+    form.addEventListener('submit', async (e) => {
+        // Only trigger overlay if form is valid and doesn't crash on standard validation
+        if(!form.checkValidity()) return;
+        
+        e.preventDefault(); // Prevent standard page reload
+        
+        // 1. Show the Loading Overlay
+        overlay.classList.add('active');
+        spinnerView.style.display = 'flex';
+        successView.style.display = 'none';
+        
+        try {
+            const formData = new FormData(form);
+            // 2. Submit form in background
+            const response = await fetch(window.location.href, {
+                method: 'POST',
+                body: formData,
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest'
+                }
+            });
+
+            if (response.redirected) {
+                // 3. Success! Show GPay Checkmark after a small delay
+                setTimeout(() => {
+                    spinnerView.style.display = 'none';
+                    successView.style.display = 'flex';
+                    
+                    if(window.lucide) {
+                        lucide.createIcons(); // render the checkmark icon
+                    }
+                    
+                    // 4. Redirect to dashboard
+                    setTimeout(() => {
+                        window.location.href = response.url;
+                    }, 1500);
+                }, 800);
+                
+            } else {
+                // Registration Failed (e.g. Password Mismatch)
+                const html = await response.text();
+                const parser = new DOMParser();
+                const doc = parser.parseFromString(html, 'text/html');
+                
+                // Extract the new form with error messages and replace current one
+                const newForm = doc.getElementById('authForm');
+                if(newForm) {
+                    form.innerHTML = newForm.innerHTML;
+                    initializePlaceholders(); // Re-apply placeholders
+                }
+                
+                // Hide overlay to let user try again
+                overlay.classList.remove('active');
+            }
+        } catch (error) {
+            console.error('Registration Error:', error);
+            overlay.classList.remove('active');
+        }
+    });
+</script>
 
 {% endblock %}
