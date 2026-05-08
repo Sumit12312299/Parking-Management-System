@@ -158,6 +158,11 @@ def extend_booking(request, booking_id):
         
     return redirect('booking_history')
 
+def verify_ticket(request, booking_id):
+    # This view is public so security guards can scan the QR code without logging in.
+    booking = get_object_or_404(Booking, id=booking_id)
+    return render(request, 'parking/verify_ticket.html', {'booking': booking})
+
 @login_required
 def payment_page(request, booking_id):
     booking = Booking.objects.get(id=booking_id)

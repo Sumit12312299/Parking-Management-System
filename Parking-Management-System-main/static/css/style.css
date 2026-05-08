@@ -666,7 +666,8 @@ body {
     justify-content: space-between;
     align-items: center;
     padding: 100px 8%;
-    background: linear-gradient(135deg, #0f5d3f 0%, #064e3b 100%);
+    /* Added a beautiful parking/car background image with a deep green overlay */
+    background: linear-gradient(rgba(6, 78, 59, 0.85), rgba(15, 93, 63, 0.85)), url('https://images.unsplash.com/photo-1486006920555-c77dcf18193c?q=80&w=2089&auto=format&fit=crop') center/cover no-repeat;
     color: white;
     min-height: 85vh;
     width: 100vw;
@@ -693,17 +694,31 @@ body {
 
 .hero-left h1 {
     font-size: 56px;
-    font-weight: 700;
+    font-weight: 800;
+    line-height: 1.1;
+}
+
+/* Running Text Animation */
+@keyframes textShine {
+    0% { background-position: 0% 50%; }
+    100% { background-position: 200% 50%; }
 }
 
 .hero-left h1 span {
-    color: #22c55e;
+    background: linear-gradient(90deg, #22c55e, #10b981, #34d399, #22c55e);
+    background-size: 200% auto;
+    color: transparent;
+    -webkit-background-clip: text;
+    background-clip: text;
+    animation: textShine 3s linear infinite;
+    display: inline-block;
 }
 
 .hero-left p {
     margin: 20px 0 30px;
     font-size: 18px;
     opacity: 0.9;
+    line-height: 1.6;
 }
 
 .hero-buttons {
@@ -822,7 +837,7 @@ body {
 
 /* Dynamic Hero Section */
 .hero {
-    background: linear-gradient(135deg, #0f5d3f 0%, #064e3b 100%) !important;
+    background: linear-gradient(rgba(6, 78, 59, 0.85), rgba(15, 93, 63, 0.85)), url('https://images.unsplash.com/photo-1486006920555-c77dcf18193c?q=80&w=2089&auto=format&fit=crop') center/cover no-repeat !important;
     position: relative !important;
     overflow: hidden !important;
 }

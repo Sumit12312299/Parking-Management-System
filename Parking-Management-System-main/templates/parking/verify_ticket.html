@@ -1,0 +1,186 @@
+{% extends 'base.html' %}
+{% block content %}
+<style>
+    .verify-page-container {
+        min-height: calc(100vh - 75px);
+        background: #f4fbf6;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 40px 20px;
+        margin: -20px;
+    }
+
+    .verify-card {
+        background: white;
+        width: 100%;
+        max-width: 450px;
+        border-radius: 24px;
+        box-shadow: 0 20px 40px rgba(6, 78, 59, 0.08);
+        overflow: hidden;
+        position: relative;
+    }
+
+    .verify-header {
+        text-align: center;
+        padding: 40px 20px 20px;
+        position: relative;
+    }
+
+    /* Verified Badge Animation */
+    .verified-badge {
+        width: 80px;
+        height: 80px;
+        background: #22c55e;
+        border-radius: 50%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        margin: 0 auto 15px;
+        box-shadow: 0 10px 25px rgba(34, 197, 94, 0.4);
+        animation: popScale 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+    }
+
+    @keyframes popScale {
+        0% { transform: scale(0); opacity: 0; }
+        100% { transform: scale(1); opacity: 1; }
+    }
+
+    .verified-badge i {
+        color: white;
+        width: 40px;
+        height: 40px;
+    }
+
+    .verify-header h2 {
+        font-size: 28px;
+        color: #16a34a;
+        font-weight: 800;
+        margin-bottom: 5px;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+    }
+
+    .verify-header p {
+        color: #6b7280;
+        font-size: 15px;
+        margin-bottom: 0;
+    }
+
+    .verify-body {
+        padding: 10px 30px 40px;
+    }
+
+    .info-group {
+        background: #f9fafb;
+        border: 1px solid #e5e7eb;
+        border-radius: 16px;
+        padding: 20px;
+        margin-bottom: 20px;
+    }
+
+    .info-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 15px;
+    }
+    .info-row:last-child {
+        margin-bottom: 0;
+    }
+
+    .info-label {
+        color: #6b7280;
+        font-size: 14px;
+        font-weight: 500;
+    }
+
+    .info-value {
+        color: #111827;
+        font-size: 16px;
+        font-weight: 700;
+        text-align: right;
+    }
+
+    /* Invalid State */
+    .invalid-badge {
+        background: #ef4444;
+        box-shadow: 0 10px 25px rgba(239, 68, 68, 0.4);
+    }
+    .verify-header.invalid h2 {
+        color: #ef4444;
+    }
+</style>
+
+<div class="verify-page-container">
+    <div class="verify-card reveal">
+        
+        {% if booking.status == 'ACTIVE' %}
+            <div class="verify-header">
+                <div class="verified-badge">
+                    <i data-lucide="shield-check"></i>
+                </div>
+                <h2>Verified</h2>
+                <p>Authentic ParkKaro Ticket</p>
+            </div>
+
+            <div class="verify-body">
+                <div class="info-group">
+                    <div class="info-row">
+                        <span class="info-label">Booking ID</span>
+                        <span class="info-value">#PK-{{ booking.id }}</span>
+                    </div>
+                    <div class="info-row">
+                        <span class="info-label">Customer Name</span>
+                        <span class="info-value">{{ booking.user.username }}</span>
+                    </div>
+                    <div class="info-row" style="padding-top:15px; margin-top:15px; border-top:1px dashed #d1d5db;">
+                        <span class="info-label">Vehicle Number</span>
+                        <span class="info-value" style="font-family: monospace; font-size: 18px; color: #2563eb; background: #eff6ff; padding: 4px 10px; border-radius: 6px; border: 1px solid #bfdbfe;">
+                            {{ booking.vehicle_number }}
+                        </span>
+                    </div>
+                </div>
+
+                <div class="info-group">
+                    <div class="info-row">
+                        <span class="info-label">Location</span>
+                        <span class="info-value">{{ booking.slot.location.name }}</span>
+                    </div>
+                    <div class="info-row">
+                        <span class="info-label">Slot</span>
+                        <span class="info-value" style="color: #16a34a; font-size: 18px;">S{{ booking.slot.slot_number }}</span>
+                    </div>
+                    <div class="info-row">
+                        <span class="info-label">Date & Time</span>
+                        <span class="info-value">{{ booking.booking_date|date:"M d, Y" }}<br><span style="font-size:14px; color:#4b5563;">{{ booking.start_time|time:"H:i" }} - {{ booking.end_time|time:"H:i" }}</span></span>
+                    </div>
+                </div>
+            </div>
+
+        {% else %}
+            <!-- CANCELLED / INVALID TICKET -->
+            <div class="verify-header invalid">
+                <div class="verified-badge invalid-badge">
+                    <i data-lucide="x-circle"></i>
+                </div>
+                <h2>Invalid / Cancelled</h2>
+                <p>This ticket is no longer active.</p>
+            </div>
+            <div class="verify-body">
+                <div class="info-group" style="text-align: center; padding: 30px;">
+                    <i data-lucide="alert-triangle" style="width: 48px; height: 48px; color: #ef4444; margin-bottom: 15px;"></i>
+                    <p style="color: #4b5563; font-weight: 500;">Booking #PK-{{ booking.id }} has been cancelled by the user and is not valid for entry.</p>
+                </div>
+            </div>
+        {% endif %}
+
+    </div>
+</div>
+
+<script>
+    if(window.lucide) {
+        lucide.createIcons();
+    }
+</script>
+{% endblock %}
