@@ -118,5 +118,426 @@
         updateCounter();
     });
     </script>
+
+    <!-- ==========================================
+         PARK_BOT FLOATING CHATBOT WIDGET
+         ========================================== -->
+    <div class="parkbot-container">
+        <!-- Chat Button -->
+        <button class="parkbot-btn" id="parkbotBtn" aria-label="Open ParkBot">
+            <div class="notification-dot"></div>
+            <i data-lucide="message-circle" class="bot-icon" style="width: 26px; height: 26px;"></i>
+            <i data-lucide="x" class="close-icon" style="display: none; width: 26px; height: 26px;"></i>
+        </button>
+
+        <!-- Chat Window -->
+        <div class="parkbot-window" id="parkbotWindow">
+            <!-- Header -->
+            <div class="parkbot-header">
+                <div class="bot-info">
+                    <div class="bot-avatar">
+                        <i data-lucide="bot" style="width: 22px; height: 22px; color: white;"></i>
+                        <div class="online-indicator"></div>
+                    </div>
+                    <div>
+                        <h4 style="margin: 0; font-size: 16px; font-weight: 600; color: white;">ParkBot</h4>
+                        <p style="margin: 2px 0 0; font-size: 11px; opacity: 0.85; color: #a7f3d0;">Smart Parking Assistant</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Chat Messages Area -->
+            <div class="parkbot-messages" id="parkbotMessages">
+                <div class="message bot-message">
+                    Hello! Welcome to ParkKaro 🚗. I am ParkBot, your smart assistant. How can I help you make your parking effortless today?
+                </div>
+            </div>
+
+            <!-- Quick chips -->
+            <div class="quick-chips">
+                <button class="chip" onclick="askBot('How to Book?')">How to Book?</button>
+                <button class="chip" onclick="askBot('Parking Charges?')">Parking Charges?</button>
+                <button class="chip" onclick="askBot('Is it refundable?')">Is it refundable?</button>
+                <button class="chip" onclick="askBot('Available Locations?')">Available Locations?</button>
+            </div>
+
+            <!-- Input Form -->
+            <form class="parkbot-input-area" id="parkbotForm" onsubmit="handleBotSubmit(event)">
+                <input type="text" id="parkbotInput" placeholder="Type a message..." autocomplete="off">
+                <button type="submit" aria-label="Send message">
+                    <i data-lucide="send" style="width: 18px; height: 18px; color: white;"></i>
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <style>
+    /* Chatbot Floating Widget Styles */
+    .parkbot-container {
+        position: fixed;
+        bottom: 30px;
+        right: 30px;
+        z-index: 9999;
+        font-family: 'Inter', sans-serif;
+    }
+
+    .parkbot-btn {
+        width: 60px;
+        height: 60px;
+        border-radius: 50%;
+        background: #22c55e;
+        color: white;
+        border: none;
+        cursor: pointer;
+        box-shadow: 0 10px 25px rgba(34, 197, 94, 0.4);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        position: relative;
+    }
+
+    .parkbot-btn:hover {
+        transform: scale(1.1) translateY(-3px);
+        background: #16a34a;
+        box-shadow: 0 12px 30px rgba(34, 197, 94, 0.5);
+    }
+
+    .parkbot-btn:active {
+        transform: scale(0.95);
+    }
+
+    .notification-dot {
+        position: absolute;
+        top: 2px;
+        right: 2px;
+        width: 12px;
+        height: 12px;
+        background: #ef4444;
+        border: 2px solid white;
+        border-radius: 50%;
+        animation: pulse 1.5s infinite;
+    }
+
+    @keyframes pulse {
+        0% { transform: scale(0.9); opacity: 1; }
+        50% { transform: scale(1.2); opacity: 0.8; }
+        100% { transform: scale(0.9); opacity: 1; }
+    }
+
+    .parkbot-window {
+        position: absolute;
+        bottom: 80px;
+        right: 0;
+        width: 360px;
+        height: 480px;
+        background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(20px);
+        -webkit-backdrop-filter: blur(20px);
+        border-radius: 20px;
+        box-shadow: 0 15px 40px rgba(0, 0, 0, 0.15);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        display: flex;
+        flex-direction: column;
+        overflow: hidden;
+        transform: scale(0.8) translateY(30px);
+        opacity: 0;
+        pointer-events: none;
+        transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        transform-origin: bottom right;
+    }
+
+    .parkbot-window.active {
+        transform: scale(1) translateY(0);
+        opacity: 1;
+        pointer-events: all;
+    }
+
+    .parkbot-header {
+        background: #064e3b;
+        padding: 18px 20px;
+        color: white;
+    }
+
+    .bot-info {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    }
+
+    .bot-avatar {
+        width: 40px;
+        height: 40px;
+        background: #22c55e;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        position: relative;
+        box-shadow: 0 4px 10px rgba(34, 197, 94, 0.3);
+    }
+
+    .online-indicator {
+        position: absolute;
+        bottom: 0;
+        right: 0;
+        width: 10px;
+        height: 10px;
+        background: #22c55e;
+        border: 2px solid #064e3b;
+        border-radius: 50%;
+    }
+
+    .parkbot-messages {
+        flex: 1;
+        padding: 20px;
+        overflow-y: auto;
+        display: flex;
+        flex-direction: column;
+        gap: 15px;
+        background: rgba(244, 251, 246, 0.5);
+    }
+
+    .message {
+        max-width: 80%;
+        padding: 12px 16px;
+        border-radius: 16px;
+        font-size: 14px;
+        line-height: 1.5;
+        animation: messageIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+
+    @keyframes messageIn {
+        from { transform: translateY(10px); opacity: 0; }
+        to { transform: translateY(0); opacity: 1; }
+    }
+
+    .bot-message {
+        background: white;
+        color: #374151;
+        align-self: flex-start;
+        border-bottom-left-radius: 4px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.02);
+        border: 1px solid #e5e7eb;
+        text-align: left;
+    }
+
+    .user-message {
+        background: #22c55e;
+        color: white;
+        align-self: flex-end;
+        border-bottom-right-radius: 4px;
+        box-shadow: 0 4px 12px rgba(34, 197, 94, 0.25);
+        text-align: left;
+    }
+
+    .typing-indicator {
+        display: flex;
+        gap: 4px;
+        align-items: center;
+        padding: 12px 16px;
+        background: white;
+        border-radius: 16px;
+        border-bottom-left-radius: 4px;
+        border: 1px solid #e5e7eb;
+        align-self: flex-start;
+    }
+
+    .typing-dot {
+        width: 6px;
+        height: 6px;
+        background: #9ca3af;
+        border-radius: 50%;
+        animation: typingBlink 1.4s infinite both;
+    }
+
+    .typing-dot:nth-child(2) { animation-delay: .2s; }
+    .typing-dot:nth-child(3) { animation-delay: .4s; }
+
+    @keyframes typingBlink {
+        0%, 100% { transform: scale(1); opacity: 0.4; }
+        50% { transform: scale(1.3); opacity: 1; }
+    }
+
+    .quick-chips {
+        display: flex;
+        gap: 8px;
+        padding: 10px 20px;
+        overflow-x: auto;
+        background: #fff;
+        border-top: 1px solid #f3f4f6;
+        white-space: nowrap;
+    }
+
+    .quick-chips::-webkit-scrollbar {
+        display: none;
+    }
+
+    .chip {
+        background: #e8f7ee;
+        color: #16a34a;
+        border: none;
+        padding: 8px 14px;
+        border-radius: 20px;
+        font-size: 12px;
+        font-weight: 500;
+        cursor: pointer;
+        transition: all 0.2s ease;
+    }
+
+    .chip:hover {
+        background: #22c55e;
+        color: white;
+        transform: translateY(-1px);
+    }
+
+    .parkbot-input-area {
+        display: flex;
+        padding: 15px 20px;
+        background: white;
+        border-top: 1px solid #f3f4f6;
+        gap: 10px;
+        align-items: center;
+    }
+
+    .parkbot-input-area input {
+        flex: 1;
+        border: 1px solid #e5e7eb;
+        background: #f9fafb;
+        padding: 12px 16px;
+        border-radius: 24px;
+        font-size: 14px;
+        outline: none;
+        transition: all 0.3s ease;
+    }
+
+    .parkbot-input-area input:focus {
+        border-color: #22c55e;
+        background: white;
+    }
+
+    .parkbot-input-area button {
+        width: 42px;
+        height: 42px;
+        border-radius: 50%;
+        background: #22c55e;
+        color: white;
+        border: none;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.2s ease;
+        box-shadow: 0 4px 10px rgba(34, 197, 94, 0.2);
+    }
+
+    .parkbot-input-area button:hover {
+        background: #16a34a;
+        transform: scale(1.05);
+    }
+    </style>
+
+    <script>
+    // Chatbot functionality
+    const parkbotBtn = document.getElementById('parkbotBtn');
+    const parkbotWindow = document.getElementById('parkbotWindow');
+    const parkbotMessages = document.getElementById('parkbotMessages');
+    const parkbotInput = document.getElementById('parkbotInput');
+    const notificationDot = document.querySelector('.notification-dot');
+
+    parkbotBtn.addEventListener('click', () => {
+        parkbotWindow.classList.toggle('active');
+        
+        // Toggle icon
+        const botIcon = parkbotBtn.querySelector('.bot-icon');
+        const closeIcon = parkbotBtn.querySelector('.close-icon');
+        
+        if (parkbotWindow.classList.contains('active')) {
+            botIcon.style.display = 'none';
+            closeIcon.style.display = 'block';
+            if (notificationDot) {
+                notificationDot.style.display = 'none'; // Dismiss notification
+            }
+        } else {
+            botIcon.style.display = 'block';
+            closeIcon.style.display = 'none';
+        }
+    });
+
+    const responses = {
+        "how to book?": "Booking is super easy! Just head to your **Dashboard**, select your preferred location, click **View Slots**, choose an available slot, and enter your details to proceed to payment! 🚗",
+        "parking charges?": "Our standard parking fee is **₹20 per hour**. The total amount is calculated based on your start and end times!",
+        "is it refundable?": "Yes, absolutely! You can cancel any active booking from your **My Bookings** page. A standard 10% cancellation fee is applied, and the remaining amount is refunded instantly to your account! 💰",
+        "available locations?": "We have parking available at popular malls, offices, and colleges. You can view all our premium locations by clicking the **Browse Locations** button on the dashboard or navbar!",
+        "support": "You can reach our premium customer support team at **support@parkkaro.com** or call us at **+91 98765 43210**! We're here to help you 24/7. 📞"
+    };
+
+    function askBot(question) {
+        appendUserMessage(question);
+        getBotResponse(question);
+    }
+
+    function handleBotSubmit(e) {
+        e.preventDefault();
+        const message = parkbotInput.value.trim();
+        if (!message) return;
+        
+        appendUserMessage(message);
+        parkbotInput.value = '';
+        getBotResponse(message);
+    }
+
+    function appendUserMessage(text) {
+        const msgDiv = document.createElement('div');
+        msgDiv.className = 'message user-message';
+        msgDiv.textContent = text;
+        parkbotMessages.appendChild(msgDiv);
+        scrollToBottom();
+    }
+
+    function getBotResponse(userMsg) {
+        // Show typing indicator
+        const typingIndicator = document.createElement('div');
+        typingIndicator.className = 'typing-indicator';
+        typingIndicator.innerHTML = `
+            <div class="typing-dot"></div>
+            <div class="typing-dot"></div>
+            <div class="typing-dot"></div>
+        `;
+        parkbotMessages.appendChild(typingIndicator);
+        scrollToBottom();
+
+        // Match response
+        let cleanMsg = userMsg.toLowerCase().replace(/[^\w\s\?]/g, '');
+        let answer = "I'm not sure about that. Could you try asking 'How to Book?', 'Parking Charges?', or contact our support at support@parkkaro.com? 😊";
+
+        for (let key in responses) {
+            if (cleanMsg.includes(key) || key.includes(cleanMsg)) {
+                answer = responses[key];
+                break;
+            }
+        }
+
+        if (cleanMsg.includes("hello") || cleanMsg.includes("hi") || cleanMsg.includes("hey")) {
+            answer = "Hello! Welcome to ParkKaro 🚗. I am ParkBot, your smart assistant. How can I help you make your parking effortless today?";
+        }
+
+        // Delay reply slightly to feel realistic
+        setTimeout(() => {
+            typingIndicator.remove();
+            const botMsgDiv = document.createElement('div');
+            botMsgDiv.className = 'message bot-message';
+            // Simple markdown-to-html conversion for bold text
+            botMsgDiv.innerHTML = answer.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+            parkbotMessages.appendChild(botMsgDiv);
+            scrollToBottom();
+            
+            // Re-render lucide icons if any
+            if(window.lucide) lucide.createIcons();
+        }, 1000);
+    }
+
+    scrollToBottom();
+    </script>
 </body>
 </html>
