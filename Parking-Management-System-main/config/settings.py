@@ -75,10 +75,24 @@ WSGI_APPLICATION = 'config.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/5.0/ref/settings/#databases
 
+import os
+import shutil
+
+IS_VERCEL = os.environ.get('VERCEL') == '1'
+
+if IS_VERCEL:
+    db_path = Path('/tmp/db.sqlite3')
+    if not db_path.exists():
+        src_db = BASE_DIR / 'db.sqlite3'
+        if src_db.exists():
+            shutil.copy2(src_db, db_path)
+else:
+    db_path = BASE_DIR / 'db.sqlite3'
+
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'NAME': db_path,
     }
 }
 

@@ -6,7 +6,7 @@
     <section class="hero">
 
     <div class="hero-left reveal">
-        <h1>Parking Made <span>Effortless.</span></h1>
+        <h1>Parking Made <span id="typewriter">Effortless.</span><span class="cursor">|</span></h1>
         <p>
             Find and book parking spots at hotels, malls, restaurants
             and more. Secure your space before you even arrive.
@@ -117,5 +117,49 @@
     </div>
 
 </div>
+
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+    const words = ["Effortless.", "Smart.", "Secure.", "Premium."];
+    let wordIndex = 0;
+    let charIndex = 0;
+    let isDeleting = false;
+    const typewriterEl = document.getElementById("typewriter");
+    const typingSpeed = 120;
+    const deletingSpeed = 60;
+    const delayBetweenWords = 2500;
+
+    function type() {
+        if (!typewriterEl) return;
+        
+        const currentWord = words[wordIndex];
+        if (isDeleting) {
+            typewriterEl.textContent = currentWord.substring(0, charIndex - 1);
+            charIndex--;
+        } else {
+            typewriterEl.textContent = currentWord.substring(0, charIndex + 1);
+            charIndex++;
+        }
+
+        let speed = isDeleting ? deletingSpeed : typingSpeed;
+
+        if (!isDeleting && charIndex === currentWord.length) {
+            isDeleting = true;
+            speed = delayBetweenWords; // Pause at the end of the word
+        } else if (isDeleting && charIndex === 0) {
+            isDeleting = false;
+            wordIndex = (wordIndex + 1) % words.length;
+            speed = 400; // Pause before typing next word
+        }
+
+        setTimeout(type, speed);
+    }
+
+    if (typewriterEl) {
+        typewriterEl.textContent = "";
+        setTimeout(type, 500);
+    }
+});
+</script>
 
 {% endblock %}
