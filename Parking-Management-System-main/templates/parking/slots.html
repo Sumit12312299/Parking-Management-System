@@ -1,0 +1,23 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<br>
+<h2 style="margin-bottom:30px;">
+    {{ location.name }} - Slots
+</h2>
+
+<div class="slot-grid reveal">
+    {% for slot in slots %}
+        {% if slot.is_available %}
+            <a href="{% url 'book_slot' slot.id %}" class="slot available">
+                {{ slot.slot_number }}
+            </a>
+        {% else %}
+            <div class="slot booked">
+                {{ slot.slot_number }}
+            </div>
+        {% endif %}
+    {% endfor %}
+</div>
+
+{% endblock %}

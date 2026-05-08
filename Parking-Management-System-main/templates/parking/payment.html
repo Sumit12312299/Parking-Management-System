@@ -1,0 +1,46 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<div style="display:flex; justify-content:center; margin-top:50px;">
+
+    <div style="width:500px; background:white; padding:30px; border-radius:12px; box-shadow:0 10px 30px rgba(0,0,0,0.1);">
+
+        <h2 style="margin-bottom:15px;">Confirm Booking</h2>
+
+       
+        <div style="background:#f3f4f6; padding:15px; border-radius:10px; font-size:14px; margin-bottom:20px;">
+
+            <p><strong>Location:</strong> {{ booking.slot.location.name }}</p>
+            <p><strong>City:</strong> {{ booking.slot.location.city }}</p>
+            <p><strong>Area:</strong> {{ booking.slot.location.area }}</p>
+            <p><strong>Slot:</strong> {{ booking.slot.slot_number }}</p>
+            <p><strong>Date:</strong> {{ booking.booking_date }}</p>
+            <p><strong>Time:</strong> {{ booking.start_time }} - {{ booking.end_time }}</p>
+            <p><strong>Total Hours:</strong> {{ booking.total_hours|floatformat:2 }}</p>
+
+        </div>
+
+        <h3 style="color:#2563eb; margin-bottom:20px;">
+            Total Payable: ₹{{ booking.total_amount|floatformat:2 }}
+        </h3>
+
+        <form method="POST">
+            {% csrf_token %}
+            <label>Enter UPI ID</label>
+            <input type="text"
+                   name="upi_id"
+                   placeholder="example@upi"
+                   required
+                   style="width:100%; padding:10px; margin:10px 0 20px 0; border-radius:8px; border:1px solid #ccc;">
+
+            <button type="submit"
+                    style="width:100%; padding:12px; background:#2563eb; color:white; border:none; border-radius:8px; font-size:16px;">
+                Pay Now
+            </button>
+        </form>
+
+    </div>
+
+</div>
+
+{% endblock %}

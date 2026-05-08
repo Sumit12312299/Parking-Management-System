@@ -1,0 +1,43 @@
+{% extends 'base.html' %}
+{% block content %}
+<br>
+<div class="auth-wrapper reveal">
+    <div class="auth-card">
+        <h2>Create Account</h2>
+        <form method="POST">
+            {% csrf_token %}
+        
+            {% if form.errors %}
+                <div style="color: #B42318; margin-bottom:15px;">
+                    {{ form.errors }}
+                </div>
+            {% endif %}
+        
+            <label>Username</label>
+            {{ form.username }}
+            
+            <label>Email</label>
+            {{ form.email }}
+        
+            <label>Phone</label>
+            {{ form.phone }}
+        
+            <label>Password</label>
+            {{ form.password1 }}
+        
+            <label>Confirm Password</label>
+            {{ form.password2 }}
+        
+            <button type="submit">Register</button>
+        </form>
+
+ 
+
+        <p style="margin-top:20px; text-align:center;">
+            Already have an account?
+            <a href="{% url 'login' %}">Login</a>
+        </p>
+    </div>
+</div>
+
+{% endblock %}

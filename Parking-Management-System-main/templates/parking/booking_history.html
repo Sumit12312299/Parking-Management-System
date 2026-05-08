@@ -1,0 +1,55 @@
+{% extends 'base.html' %}
+{% block content %}
+<br>
+<h2 style="margin-bottom:30px;">My Bookings</h2>
+
+{% if bookings %}
+<div class="booking-table reveal">
+    <table>
+        <thead>
+            <tr>
+                <th>Location</th>
+                <th>Slot</th>
+                <th>Booked On</th>
+                <th>Status</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for booking in bookings %}
+            <tr>
+                <td>{{ booking.slot.location.name }}</td>
+                <td>{{ booking.slot.slot_number }}</td>
+                <td>{{ booking.created_at|date:"d M Y, h:i A" }}</td>
+        
+                
+                <td>
+                    {% if booking.status == 'ACTIVE' %}
+                        <span class="status-active">Active</span>
+                    {% else %}
+                        <span class="status-cancelled">Cancelled</span>
+                    {% endif %}
+                </td>
+        
+                
+                <td>
+                    {% if booking.status == 'ACTIVE' %}
+                        <a href="{% url 'cancel_booking' booking.id %}"
+                           class="btn-cancel">
+                            Cancel
+                        </a>
+                    {% else %}
+                        -
+                    {% endif %}
+                </td>
+        
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% else %}
+<p>You haven’t booked any parking slots yet.</p>
+{% endif %}
+
+{% endblock %}

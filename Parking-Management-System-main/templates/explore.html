@@ -1,0 +1,60 @@
+{% extends 'base.html' %}
+{% block content %}
+<br>
+<h2 style="margin-bottom:20px;">Explore Parking Locations</h2>
+<div class="filter-section ">
+    <form method="GET" class="filter-form ">
+
+        <div class="filter-group ">
+            <label>City</label>
+            <select name="city" onchange="this.form.submit()">
+                <option value="">Select City</option>
+                {% for c in cities %}
+                    <option value="{{ c }}" {% if c == selected_city %}selected{% endif %}>
+                        {{ c }}
+                    </option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <div class="filter-group">
+            <label>Area</label>
+            <select name="area">
+                <option value="">Select Area</option>
+                {% for a in areas %}
+                    <option value="{{ a }}" {% if a == selected_area %}selected{% endif %}>
+                        {{ a }}
+                    </option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <button type="submit" class="btn-filter">
+            Search
+        </button>
+
+    </form>
+</div>
+
+<hr style="margin-bottom:30px;">
+
+<div class="card-grid">
+    {% for location in locations %}
+        <div class="card reveal">
+            <h3>{{ location.name }}</h3>
+            <p>{{ location.location_type }}</p>
+            <p class="location-meta">
+                {{ location.area }}, {{ location.city }}
+            </p>
+
+            <a href="{% url 'view_slots' location.id %}"
+               class="btn-outline">
+                View Slots
+            </a>
+        </div>
+    {% empty %}
+        <p>No locations found.</p>
+    {% endfor %}
+</div>
+
+{% endblock %}
