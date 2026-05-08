@@ -1,55 +1,641 @@
 {% extends 'base.html' %}
 {% block content %}
-<br>
-<h2 style="margin-bottom:30px;">My Bookings</h2>
 
-{% if bookings %}
-<div class="booking-table reveal">
-    <table>
-        <thead>
-            <tr>
-                <th>Location</th>
-                <th>Slot</th>
-                <th>Booked On</th>
-                <th>Status</th>
-                <th>Action</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for booking in bookings %}
-            <tr>
-                <td>{{ booking.slot.location.name }}</td>
-                <td>{{ booking.slot.slot_number }}</td>
-                <td>{{ booking.created_at|date:"d M Y, h:i A" }}</td>
-        
+<style>
+.history-container {
+    max-width: 1000px;
+    margin: 40px auto;
+    padding: 0 20px;
+    min-height: 60vh;
+}
+
+.history-header {
+    margin-bottom: 30px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.history-header h2 {
+    font-size: 32px;
+    font-weight: 800;
+    color: #111827;
+    margin: 0;
+}
+
+.booking-cards {
+    display: flex;
+    flex-direction: column;
+    gap: 25px;
+}
+
+.history-card {
+    background: white;
+    border-radius: 20px;
+    padding: 25px 30px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.04);
+    display: flex;
+    justify-content: space-between;
+    align-items: stretch;
+    border: 1px solid #f3f4f6;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+    width: 100%;
+    max-width: none;
+}
+
+.history-card::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0;
+    height: 100%;
+    width: 6px;
+    background: #22c55e;
+}
+
+.history-card.status-cancelled::before {
+    background: #ef4444;
+}
+
+.history-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 15px 35px rgba(0,0,0,0.08);
+}
+
+.booking-content {
+    display: flex;
+    gap: 25px;
+    flex: 1;
+}
+
+.booking-icon-wrapper {
+    width: 70px;
+    height: 70px;
+    background: #f0fdf4;
+    border-radius: 18px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: #22c55e;
+    flex-shrink: 0;
+}
+
+.status-cancelled .booking-icon-wrapper {
+    background: #fef2f2;
+    color: #ef4444;
+}
+
+.booking-main {
+    flex: 1;
+}
+
+.booking-main h3 {
+    margin: 0 0 5px 0;
+    font-size: 22px;
+    color: #111827;
+    font-weight: 800;
+}
+
+.location-text {
+    color: #6b7280;
+    font-size: 14px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-bottom: 20px;
+}
+
+.booking-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    background: #f9fafb;
+    padding: 15px 20px;
+    border-radius: 14px;
+    border: 1px solid #f3f4f6;
+}
+
+.grid-item {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    min-width: 120px;
+}
+
+.grid-label {
+    font-size: 11px;
+    color: #9ca3af;
+    text-transform: uppercase;
+    font-weight: 700;
+    letter-spacing: 0.8px;
+}
+
+.grid-value {
+    font-size: 15px;
+    color: #111827;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.booking-actions {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    justify-content: space-between;
+    min-width: 160px;
+    margin-left: 30px;
+    padding-left: 30px;
+    border-left: 1px dashed #e5e7eb;
+}
+
+.status-badge {
+    padding: 8px 16px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 800;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.status-badge.active {
+    background: #dcfce7;
+    color: #166534;
+}
+
+.status-badge.cancelled {
+    background: #fee2e2;
+    color: #991b1b;
+}
+
+.price-box {
+    text-align: right;
+    margin-top: 15px;
+}
+
+.price-tag {
+    font-size: 26px;
+    font-weight: 800;
+    color: #111827;
+}
+
+.btn-cancel-modern {
+    background: #fee2e2;
+    color: #dc2626;
+    border: none;
+    padding: 12px 20px;
+    border-radius: 12px;
+    font-size: 14px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 15px;
+    width: 100%;
+    justify-content: center;
+}
+
+.btn-cancel-modern:hover {
+    background: #f87171;
+    color: white;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(239, 68, 68, 0.2);
+}
+
+/* Modal Styles */
+.refund-modal-overlay {
+    position: fixed;
+    top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(0,0,0,0.5);
+    z-index: 1000;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s ease;
+    backdrop-filter: blur(4px);
+}
+
+.refund-modal-overlay.active {
+    opacity: 1;
+    pointer-events: all;
+}
+
+.refund-modal {
+    background: white;
+    border-radius: 24px;
+    width: 90%;
+    max-width: 420px;
+    padding: 35px;
+    text-align: center;
+    box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+    transform: translateY(20px);
+    transition: transform 0.3s ease;
+}
+
+.refund-modal-overlay.active .refund-modal {
+    transform: translateY(0);
+}
+
+.modal-icon {
+    width: 64px; height: 64px;
+    background: #fee2e2;
+    color: #ef4444;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 0 auto 20px auto;
+}
+
+.refund-modal h3 {
+    margin-bottom: 12px;
+    font-size: 24px;
+    font-weight: 800;
+    color: #111827;
+}
+
+.refund-details {
+    background: #f9fafb;
+    border-radius: 16px;
+    padding: 20px;
+    margin: 25px 0;
+    text-align: left;
+    border: 1px solid #f3f4f6;
+}
+
+.refund-row {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 10px;
+    font-size: 15px;
+    color: #4b5563;
+    font-weight: 500;
+}
+
+.refund-row.net {
+    border-top: 1px solid #e5e7eb;
+    padding-top: 12px;
+    margin-top: 4px;
+    font-weight: 800;
+    color: #16a34a;
+    font-size: 18px;
+}
+
+.modal-actions {
+    display: flex;
+    gap: 12px;
+}
+
+.modal-btn {
+    flex: 1;
+    padding: 14px;
+    border-radius: 12px;
+    font-weight: 700;
+    cursor: pointer;
+    border: none;
+    font-size: 15px;
+    transition: all 0.2s;
+}
+
+.modal-btn.cancel {
+    background: #f3f4f6;
+    color: #374151;
+}
+
+.modal-btn.cancel:hover { 
+    background: #e5e7eb; 
+}
+
+.modal-btn.confirm {
+    background: #ef4444;
+    color: white;
+}
+
+.modal-btn.confirm:hover { 
+    background: #dc2626; 
+    box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
+}
+
+@media(max-width: 768px) {
+    .history-card {
+        flex-direction: column;
+        padding: 20px;
+    }
+    .booking-actions {
+        width: 100%;
+        flex-direction: row;
+        align-items: center;
+        margin-left: 0;
+        padding-left: 0;
+        border-left: none;
+        border-top: 1px dashed #e5e7eb;
+        margin-top: 20px;
+        padding-top: 20px;
+    }
+    .price-box {
+        margin-top: 0;
+    }
+    .btn-cancel-modern {
+        margin-top: 0;
+        width: auto;
+    }
+}
+</style>
+
+<div class="history-container">
+    <div class="history-header reveal">
+        <i data-lucide="history" style="width: 36px; height: 36px; color: #22c55e;"></i>
+        <h2>My Bookings</h2>
+    </div>
+
+    {% if bookings %}
+    <div class="booking-cards reveal" style="transition-delay: 0.1s;">
+        {% for booking in bookings %}
+        <div class="history-card {% if booking.status == 'CANCELLED' %}status-cancelled{% endif %}">
+            
+            <div class="booking-content">
+                <div class="booking-icon-wrapper">
+                    <i data-lucide="car" style="width: 36px; height: 36px;"></i>
+                </div>
                 
-                <td>
+                <div class="booking-main">
+                    <h3>{{ booking.slot.location.name }}</h3>
+                    <div class="location-text">
+                        <i data-lucide="map-pin" style="width: 16px; height: 16px;"></i> 
+                        {{ booking.slot.location.area }}, {{ booking.slot.location.city }}
+                    </div>
+                    
+                    <div class="booking-grid">
+                        <div class="grid-item">
+                            <span class="grid-label">Date</span>
+                            <span class="grid-value">
+                                <i data-lucide="calendar" style="width: 16px; height: 16px; color: #22c55e;"></i> 
+                                {{ booking.booking_date|date:"M d, Y" }}
+                            </span>
+                        </div>
+                        <div class="grid-item">
+                            <span class="grid-label">Time</span>
+                            <span class="grid-value">
+                                <i data-lucide="clock" style="width: 16px; height: 16px; color: #22c55e;"></i> 
+                                {{ booking.start_time|time:"H:i" }} - {{ booking.end_time|time:"H:i" }}
+                            </span>
+                        </div>
+                        <div class="grid-item">
+                            <span class="grid-label">Slot</span>
+                            <span class="grid-value">
+                                <i data-lucide="disc" style="width: 16px; height: 16px; color: #22c55e;"></i> 
+                                S{{ booking.slot.slot_number }}
+                            </span>
+                        </div>
+                        <div class="grid-item">
+                            <span class="grid-label">Vehicle</span>
+                            <span class="grid-value" style="font-family: monospace; letter-spacing: 1px;">
+                                <i data-lucide="car-front" style="width: 16px; height: 16px; color: #22c55e;"></i> 
+                                {{ booking.vehicle_number }}
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="booking-actions">
+                {% if booking.status == 'ACTIVE' %}
+                    <span class="status-badge active"><i data-lucide="check-circle-2" style="width: 14px; height: 14px;"></i> Active</span>
+                {% else %}
+                    <span class="status-badge cancelled"><i data-lucide="x-circle" style="width: 14px; height: 14px;"></i> Cancelled</span>
+                {% endif %}
+
+                <div class="price-box">
+                    <div class="price-tag">₹{{ booking.total_amount|floatformat:2 }}</div>
                     {% if booking.status == 'ACTIVE' %}
-                        <span class="status-active">Active</span>
+                        <div style="display:flex; gap:10px; margin-top:15px; width:100%;">
+                            <button class="btn-cancel-modern" style="margin-top:0; background:#f0fdf4; color:#16a34a; border:1px solid #16a34a; flex:1;" 
+                                    onclick="openTicketModal('{{ booking.id }}', '{{ booking.slot.location.name|escapejs }}', '{{ booking.slot.slot_number }}', '{{ booking.start_time|time:"H:i" }} - {{ booking.end_time|time:"H:i" }}')">
+                                <i data-lucide="qr-code" style="width: 18px; height: 18px;"></i> Ticket
+                            </button>
+                            <button class="btn-cancel-modern" style="margin-top:0; background:#eff6ff; color:#2563eb; border:1px solid #2563eb; flex:1;"
+                                    onclick="openExtendModal('{% url 'extend_booking' booking.id %}')">
+                                <i data-lucide="clock" style="width: 18px; height: 18px;"></i> Extend
+                            </button>
+                            <button class="btn-cancel-modern" style="margin-top:0; flex:1;" 
+                                    onclick="openRefundModal('{% url 'cancel_booking' booking.id %}', {{ booking.total_amount }})">
+                                <i data-lucide="x" style="width: 18px; height: 18px;"></i> Cancel
+                            </button>
+                        </div>
                     {% else %}
-                        <span class="status-cancelled">Cancelled</span>
+                        <span style="font-size: 13px; color: #6b7280; font-weight: 600; display: block; margin-top: 5px;">Refund Processed</span>
                     {% endif %}
-                </td>
-        
-                
-                <td>
-                    {% if booking.status == 'ACTIVE' %}
-                        <a href="{% url 'cancel_booking' booking.id %}"
-                           class="btn-cancel">
-                            Cancel
-                        </a>
-                    {% else %}
-                        -
-                    {% endif %}
-                </td>
-        
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
+                </div>
+            </div>
+            
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <div class="reveal" style="text-align: center; padding: 60px 20px; background: white; border-radius: 16px; border: 1px dashed #d1d5db;">
+        <i data-lucide="calendar-x" style="width: 60px; height: 60px; color: #9ca3af; margin-bottom: 15px;"></i>
+        <h3 style="color: #374151;">No Bookings Yet</h3>
+        <p style="color: #6b7280;">You haven't booked any parking slots. Start exploring nearby locations!</p>
+    </div>
+    {% endif %}
 </div>
-{% else %}
-<p>You haven’t booked any parking slots yet.</p>
-{% endif %}
+
+<!-- Refund Confirmation Modal -->
+<div class="refund-modal-overlay" id="refundModal">
+    <div class="refund-modal">
+        <div class="modal-icon">
+            <i data-lucide="alert-triangle" style="width: 36px; height: 36px;"></i>
+        </div>
+        <h3>Cancel Booking</h3>
+        <p style="color: #6b7280; font-size: 15px; margin-bottom: 0;">Are you sure you want to cancel this booking?</p>
+        <p style="color: #6b7280; font-size: 14px;">A small cancellation fee will be deducted.</p>
+        
+        <div class="refund-details">
+            <div class="refund-row">
+                <span>Original Amount</span>
+                <span id="modalOriginalAmount" style="font-weight: 600; color: #111827;">₹0.00</span>
+            </div>
+            <div class="refund-row" style="color: #ef4444;">
+                <span>Cancellation Fee</span>
+                <span id="modalCancelFee" style="font-weight: 600;">-₹0.00</span>
+            </div>
+            <div class="refund-row net">
+                <span>Refund Amount</span>
+                <span id="modalRefundAmount">₹0.00</span>
+            </div>
+        </div>
+
+        <div class="modal-actions">
+            <button class="modal-btn cancel" onclick="closeRefundModal()">Keep Booking</button>
+            <button class="modal-btn confirm" id="confirmCancelBtn">Confirm Cancel</button>
+        </div>
+    </div>
+</div>
+
+<!-- Ticket Confirmation Modal -->
+<div class="refund-modal-overlay" id="ticketModal">
+    <div class="refund-modal" style="max-width: 350px; padding: 25px;">
+        <h3 style="margin-bottom: 5px;">Parking E-Ticket</h3>
+        <p style="color: #6b7280; font-size: 14px; margin-bottom: 20px;">Scan at the entrance</p>
+        
+        <div style="background: white; padding: 15px; border-radius: 12px; border: 2px dashed #e5e7eb; margin-bottom: 20px;">
+            <img id="qrCodeImage" src="" alt="QR Code" style="width: 100%; height: auto; display: block;">
+        </div>
+
+        <div class="refund-details" style="margin-top: 0;">
+            <div class="refund-row">
+                <span>Location</span>
+                <span id="ticketLocation" style="font-weight: 600; color: #111827;">-</span>
+            </div>
+            <div class="refund-row">
+                <span>Slot</span>
+                <span id="ticketSlot" style="font-weight: 600; color: #111827;">-</span>
+            </div>
+            <div class="refund-row">
+                <span>Time</span>
+                <span id="ticketTime" style="font-weight: 600; color: #111827;">-</span>
+            </div>
+        </div>
+
+        <button class="modal-btn" style="background: #22c55e; color: white; width: 100%;" onclick="closeTicketModal()">Close Ticket</button>
+    </div>
+</div>
+
+<!-- Extend Booking Modal -->
+<div class="refund-modal-overlay" id="extendModal">
+    <div class="refund-modal" style="max-width: 400px;">
+        <div class="modal-icon" style="background: #eff6ff; color: #3b82f6;">
+            <i data-lucide="clock" style="width: 36px; height: 36px;"></i>
+        </div>
+        <h3 style="color: #111827;">Extend Time</h3>
+        <p style="color: #6b7280; font-size: 14px; margin-bottom: 20px;">Need more time? Extend your booking now.</p>
+        
+        <form method="POST" id="extendForm">
+            {% csrf_token %}
+            <div style="text-align: left; margin-bottom: 20px;">
+                <label style="display: block; font-size: 14px; font-weight: 600; color: #374151; margin-bottom: 8px;">Hours to extend</label>
+                <select name="hours" id="extendHours" style="width: 100%; padding: 12px; border-radius: 10px; border: 1px solid #e5e7eb; font-size: 15px; outline: none;" onchange="updateExtendPrice()">
+                    <option value="1">1 Hour</option>
+                    <option value="2">2 Hours</option>
+                    <option value="3">3 Hours</option>
+                    <option value="4">4 Hours</option>
+                    <option value="5">5 Hours</option>
+                </select>
+            </div>
+
+            <div class="refund-details" style="margin-top: 0; padding: 15px;">
+                <div class="refund-row" style="margin-bottom: 0;">
+                    <span>Extra Charge</span>
+                    <span id="extendChargeAmount" style="font-weight: 800; color: #2563eb; font-size: 18px;">₹20.00</span>
+                </div>
+            </div>
+
+            <div class="modal-actions">
+                <button type="button" class="modal-btn cancel" onclick="closeExtendModal()">Cancel</button>
+                <button type="submit" class="modal-btn confirm" style="background: #3b82f6;" id="confirmExtendBtn">Pay & Extend</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+    if(window.lucide) {
+        lucide.createIcons();
+    }
+
+    // --- Refund Modal Logic ---
+    const modal = document.getElementById('refundModal');
+    let cancelUrl = '';
+
+    function openRefundModal(url, amount) {
+        cancelUrl = url;
+        let total = parseFloat(amount);
+        let fee = total * 0.10;
+        if(fee < 5 && total > 5) fee = 5;
+        if(fee > total) fee = total;
+        let refund = total - fee;
+
+        document.getElementById('modalOriginalAmount').innerText = '₹' + total.toFixed(2);
+        document.getElementById('modalCancelFee').innerText = '-₹' + fee.toFixed(2);
+        document.getElementById('modalRefundAmount').innerText = '₹' + refund.toFixed(2);
+        modal.classList.add('active');
+    }
+
+    function closeRefundModal() {
+        modal.classList.remove('active');
+    }
+
+    document.getElementById('confirmCancelBtn').addEventListener('click', function() {
+        this.innerHTML = '<i class="lucide-loader" style="width:18px;height:18px;animation:spin 1s linear infinite;"></i> Cancelling...';
+        window.location.href = cancelUrl;
+    });
+
+    modal.addEventListener('click', function(e) {
+        if(e.target === modal) { closeRefundModal(); }
+    });
+
+    // --- Ticket Modal Logic ---
+    const ticketModal = document.getElementById('ticketModal');
+    
+    function openTicketModal(bookingId, locationName, slotNum, timeString) {
+        const qrData = encodeURIComponent(`PARKKARO-BOOKING-${bookingId}`);
+        const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=${qrData}&color=064e3b`;
+        
+        document.getElementById('qrCodeImage').src = qrUrl;
+        document.getElementById('ticketLocation').innerText = locationName;
+        document.getElementById('ticketSlot').innerText = `S${slotNum}`;
+        document.getElementById('ticketTime').innerText = timeString;
+
+        ticketModal.classList.add('active');
+    }
+
+    function closeTicketModal() {
+        ticketModal.classList.remove('active');
+    }
+
+    ticketModal.addEventListener('click', function(e) {
+        if(e.target === ticketModal) { closeTicketModal(); }
+    });
+
+    // --- Extend Modal Logic ---
+    const extendModal = document.getElementById('extendModal');
+    const extendForm = document.getElementById('extendForm');
+    const extendChargeAmount = document.getElementById('extendChargeAmount');
+    
+    function openExtendModal(url) {
+        extendForm.action = url;
+        document.getElementById('extendHours').value = '1';
+        updateExtendPrice();
+        extendModal.classList.add('active');
+    }
+
+    function closeExtendModal() {
+        extendModal.classList.remove('active');
+    }
+
+    function updateExtendPrice() {
+        const hours = parseInt(document.getElementById('extendHours').value);
+        const charge = hours * 20;
+        extendChargeAmount.innerText = '₹' + charge.toFixed(2);
+    }
+
+    extendForm.addEventListener('submit', function() {
+        document.getElementById('confirmExtendBtn').innerHTML = '<i class="lucide-loader" style="width:18px;height:18px;animation:spin 1s linear infinite;"></i> Processing...';
+    });
+
+    extendModal.addEventListener('click', function(e) {
+        if(e.target === extendModal) { closeExtendModal(); }
+    });
+</script>
 
 {% endblock %}

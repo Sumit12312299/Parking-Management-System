@@ -41,6 +41,8 @@ class Booking(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     slot = models.ForeignKey('ParkingSlot', on_delete=models.CASCADE)
 
+    vehicle_number = models.CharField(max_length=20, default="NOT-PROVIDED")
+
     booking_date = models.DateField()
     start_time = models.TimeField()
     end_time = models.TimeField()
@@ -52,7 +54,7 @@ class Booking(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        return f"{self.user.username} - {self.slot.slot_number}"
+        return f"{self.user.username} - {self.slot.slot_number} ({self.vehicle_number})"
 
 
 

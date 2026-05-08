@@ -114,17 +114,48 @@ def cancel_booking(request, booking_id):
         status='ACTIVE'
     )
 
-    
     booking.status = 'CANCELLED'
     booking.save()
 
-   
     slot = booking.slot
     slot.is_available = True
     slot.save()
 
-    messages.success(request, "Booking cancelled successfully!")
+    # Refund Calculation
+    total_amount = booking.total_amount
+    cancellation_fee = total_amount * 0.10 # 10% cancellation charge
+    if cancellation_fee < 5 and total_amount > 5:
+        cancellation_fee = 5
+    elif cancellation_fee > total_amount:
+        cancellation_fee = total_amount
+    
+    refund_amount = total_amount - cancellation_fee
 
+    messages.success(request, f"Booking cancelled! ₹{cancellation_fee:.2f} cancellation fee applied. A refund of ₹{refund_amount:.2f} has been initiated to your account.")
+
+    return redirect('booking_history')
+
+from datetime import timedelta
+@login_required
+def extend_booking(request, booking_id):
+    booking = get_object_or_404(Booking, id=booking_id, user=request.user, status='ACTIVE')
+    
+    if request.method == 'POST':
+        hours_to_add = int(request.POST.get('hours', 1))
+        
+        # Add hours to end_time
+        dt = datetime.combine(booking.booking_date, booking.end_time)
+        dt = dt + timedelta(hours=hours_to_add)
+        booking.end_time = dt.time()
+        
+        # Update cost and hours
+        booking.total_hours += hours_to_add
+        extra_charge = hours_to_add * 20
+        booking.total_amount += extra_charge 
+        booking.save()
+        
+        messages.success(request, f"Time Extended by {hours_to_add} hour(s)! ₹{extra_charge} extra charge added. Your new time is updated.")
+        
     return redirect('booking_history')
 
 @login_required

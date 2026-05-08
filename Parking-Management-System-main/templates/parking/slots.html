@@ -1,23 +1,201 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<br>
-<h2 style="margin-bottom:30px;">
-    {{ location.name }} - Slots
-</h2>
+<style>
+.slots-page-container {
+    max-width: 1000px;
+    margin: 40px auto;
+    padding: 0 20px;
+    min-height: 60vh;
+}
 
-<div class="slot-grid reveal">
-    {% for slot in slots %}
-        {% if slot.is_available %}
-            <a href="{% url 'book_slot' slot.id %}" class="slot available">
-                {{ slot.slot_number }}
-            </a>
-        {% else %}
-            <div class="slot booked">
-                {{ slot.slot_number }}
+.slots-header {
+    text-align: center;
+    margin-bottom: 40px;
+}
+
+.slots-header h2 {
+    font-size: 32px;
+    font-weight: 800;
+    color: #111827;
+    margin: 0 0 10px 0;
+}
+
+.slots-header p {
+    color: #6b7280;
+    font-size: 16px;
+}
+
+.parking-lot {
+    background: #374151; /* Dark asphalt color */
+    border-radius: 20px;
+    padding: 40px;
+    position: relative;
+    box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+    max-width: 800px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    gap: 30px;
+    border: 8px solid #d1d5db; /* Curbs */
+}
+
+/* The road divider line */
+.parking-lot::after {
+    content: '';
+    position: absolute;
+    top: 0; bottom: 0; left: 50%;
+    transform: translateX(-50%);
+    width: 4px;
+    background-image: linear-gradient(to bottom, #fcd34d 50%, transparent 50%);
+    background-size: 100% 40px;
+    z-index: 1;
+}
+
+.slot-row {
+    display: flex;
+    justify-content: space-between;
+    position: relative;
+    z-index: 2;
+}
+
+.slot-visual {
+    width: 80px;
+    height: 120px;
+    border: 3px solid rgba(255, 255, 255, 0.4);
+    border-radius: 8px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-decoration: none;
+    background: rgba(255,255,255,0.05);
+}
+
+.slot-visual::before {
+    content: attr(data-slot);
+    position: absolute;
+    bottom: -25px;
+    color: white;
+    font-weight: 700;
+    font-size: 14px;
+    letter-spacing: 1px;
+}
+
+.slot-visual.available {
+    border-color: #22c55e;
+}
+.slot-visual.available:hover {
+    background: rgba(34, 197, 94, 0.2);
+    transform: scale(1.05);
+    box-shadow: 0 0 20px rgba(34, 197, 94, 0.4);
+}
+.slot-visual.available .park-icon {
+    color: #22c55e;
+    font-size: 24px;
+    font-weight: 800;
+}
+
+.slot-visual.booked {
+    border-color: #ef4444;
+    cursor: not-allowed;
+    background: rgba(239, 68, 68, 0.1);
+}
+.slot-visual.booked .car-icon {
+    color: #fca5a5;
+    width: 50px;
+    height: 50px;
+}
+
+/* Legend */
+.legend {
+    display: flex;
+    justify-content: center;
+    gap: 30px;
+    margin-bottom: 30px;
+}
+.legend-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 15px;
+    font-weight: 600;
+    color: #374151;
+}
+.legend-box {
+    width: 24px; height: 24px;
+    border-radius: 4px;
+}
+.legend-available { background: #dcfce7; border: 2px solid #22c55e; }
+.legend-booked { background: #fee2e2; border: 2px solid #ef4444; }
+
+@media(max-width: 600px) {
+    .slot-visual { width: 60px; height: 90px; }
+    .parking-lot { padding: 20px; }
+}
+</style>
+
+<div class="slots-page-container">
+    <div class="slots-header reveal">
+        <h2>Interactive Parking Map</h2>
+        <p><i data-lucide="map-pin" style="width:16px;height:16px;"></i> {{ location.name }}, {{ location.city }}</p>
+    </div>
+
+    <div class="legend reveal">
+        <div class="legend-item">
+            <div class="legend-box legend-available"></div> Available
+        </div>
+        <div class="legend-item">
+            <div class="legend-box legend-booked"></div> Booked
+        </div>
+    </div>
+
+    <!-- Live Parking Lot Map -->
+    <div class="parking-lot reveal" style="transition-delay: 0.1s;">
+        <!-- Group slots into pairs (left and right of the road) -->
+        <div class="slot-row" style="display: grid; grid-template-columns: 1fr 1fr; gap: 40px;">
+            <div style="display:flex; flex-wrap:wrap; gap:15px; justify-content:flex-end; padding-right:30px;">
+                {% for slot in slots %}
+                    {% if forloop.counter|divisibleby:2 %}
+                        <!-- Skip even slots for the left side -->
+                    {% else %}
+                        {% if slot.is_available %}
+                            <a href="{% url 'book_slot' slot.id %}" class="slot-visual available" data-slot="{{ slot.slot_number }}">
+                                <span class="park-icon">P</span>
+                            </a>
+                        {% else %}
+                            <div class="slot-visual booked" data-slot="{{ slot.slot_number }}">
+                                <i data-lucide="car-front" class="car-icon"></i>
+                            </div>
+                        {% endif %}
+                    {% endif %}
+                {% endfor %}
             </div>
-        {% endif %}
-    {% endfor %}
+
+            <div style="display:flex; flex-wrap:wrap; gap:15px; justify-content:flex-start; padding-left:30px;">
+                {% for slot in slots %}
+                    {% if forloop.counter|divisibleby:2 %}
+                        {% if slot.is_available %}
+                            <a href="{% url 'book_slot' slot.id %}" class="slot-visual available" data-slot="{{ slot.slot_number }}">
+                                <span class="park-icon">P</span>
+                            </a>
+                        {% else %}
+                            <div class="slot-visual booked" data-slot="{{ slot.slot_number }}">
+                                <i data-lucide="car-front" class="car-icon"></i>
+                            </div>
+                        {% endif %}
+                    {% endif %}
+                {% endfor %}
+            </div>
+        </div>
+    </div>
 </div>
 
+<script>
+    if(window.lucide) {
+        lucide.createIcons();
+    }
+</script>
 {% endblock %}

@@ -9,4 +9,5 @@ urlpatterns = [
     path('history/', views.booking_history, name='booking_history'),
     path('explore/', views.explore_locations, name='explore_locations'),
     path('payment/<int:booking_id>/', views.payment_page, name='payment_page'), 
+    path('extend/<int:booking_id>/', views.extend_booking, name='extend_booking'),
 ]
