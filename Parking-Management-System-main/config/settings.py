@@ -152,3 +152,18 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 LOGIN_REDIRECT_URL = 'dashboard'
 LOGOUT_REDIRECT_URL = 'login'
 LOGIN_URL = 'login'
+
+# Google Gemini API Key for Chatbot
+GEMINI_API_KEY = "AIzaSyBu-eelrllWBCcMJ4R33kffQ3tyDtxNSPc"
+
+# Patch Django + Python 3.14 compatibility error globally
+try:
+    from django.template.context import BaseContext
+    def patched_copy(self):
+        duplicate = self.__class__.__new__(self.__class__)
+        duplicate.__dict__.update(self.__dict__)
+        duplicate.dicts = self.dicts[:]
+        return duplicate
+    BaseContext.__copy__ = patched_copy
+except Exception:
+    pass

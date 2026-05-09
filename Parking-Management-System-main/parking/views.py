@@ -213,3 +213,166 @@ def explore_locations(request):
     }
 
     return render(request, 'explore.html', context)
+
+
+from django.http import JsonResponse
+from django.views.decorators.csrf import csrf_exempt
+import json
+import urllib.request
+from django.conf import settings
+
+@csrf_exempt
+def chatbot_api(request):
+    if request.method != 'POST':
+        return JsonResponse({"error": "POST method required"}, status=400)
+    
+    try:
+        data = json.loads(request.body)
+        user_message = data.get("message", "").strip()
+    except Exception:
+        return JsonResponse({"error": "Invalid JSON"}, status=400)
+        
+    if not user_message:
+        return JsonResponse({"reply": "Type something to chat!"})
+        
+    # Compile real-time database context
+    try:
+        locations = Location.objects.all()
+        locations_list = []
+        for loc in locations:
+            total = ParkingSlot.objects.filter(location=loc).count()
+            avail = ParkingSlot.objects.filter(location=loc, is_available=True).count()
+            slots_list = list(ParkingSlot.objects.filter(location=loc).values_list('slot_number', flat=True))
+            locations_list.append(
+                f"- {loc.name} (Type: {loc.location_type}, Area: {loc.area}, City: {loc.city}): "
+                f"Total slots = {total}, Available slots = {avail}, Booked slots = {total - avail}. "
+                f"Slot numbers are: {', '.join(slots_list)}."
+            )
+        locations_context = "\n".join(locations_list)
+    except Exception as e:
+        locations_context = "Locations are standard malls, hotels, and offices."
+
+    pricing_context = (
+        "Our standard parking fee is ₹20 per hour. The price is calculated as ₹20 * hours. For example, 3 hours costs ₹60. "
+        "Refund Policy: Yes, bookings are fully refundable! If a user cancels their active booking from their 'My Bookings' page, "
+        "a standard 10% cancellation fee is applied, and the remaining 90% of the total amount is refunded instantly to their account."
+    )
+    
+    system_prompt = (
+        "You are ParkBot, the official smart AI assistant for ParkKaro, a premium Parking Management System. "
+        "Answer the user's questions politely, professionally, and naturally. "
+        "Always use the following real-time database context to answer accurately:\n\n"
+        "=== REAL-TIME PARKING LOCATIONS DATA ===\n"
+        f"{locations_context}\n\n"
+        "=== PRICING DATA ===\n"
+        f"{pricing_context}\n\n"
+        "=== SYSTEM INSTRUCTIONS ===\n"
+        "1. Give direct, clear, and helpful answers.\n"
+        "2. Keep replies concise and easy to read.\n"
+        "3. Use bold text and emojis to make replies attractive.\n"
+        "4. If a user says 'do a booking for me' or asks to book a slot, tell them you CAN do this for them. Ask them for any missing details:\n"
+        "   - Location Name\n"
+        "   - Slot Number (must be an available slot number for that location from the data above)\n"
+        "   - Vehicle Number\n"
+        "   - Date (format: YYYY-MM-DD)\n"
+        "   - Start Time (format: HH:MM, e.g., 14:00)\n"
+        "   - End Time (format: HH:MM, e.g., 16:00)\n"
+        "5. Once you have ALL details from the user, confirm the booking and YOU MUST append a special action block at the very end of your response exactly like this (with NO extra characters inside the brackets):\n"
+        "   [BOOK_ACTION] {\"location_name\": \"...\", \"slot_number\": \"...\", \"vehicle_number\": \"...\", \"date\": \"...\", \"start_time\": \"...\", \"end_time\": \"...\"}\n"
+        "6. Speak in English or Hinglish depending on how the user asks."
+    )
+    
+    # Call Gemini API safely using urllib
+    api_key = getattr(settings, "GEMINI_API_KEY", "")
+    url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key={api_key}"
+    
+    payload = {
+        "contents": [
+            {
+                "parts": [
+                    {"text": system_prompt},
+                    {"text": f"User: {user_message}"}
+                ]
+            }
+        ]
+    }
+    
+    try:
+        req_data = json.dumps(payload).encode('utf-8')
+        req = urllib.request.Request(
+            url,
+            data=req_data,
+            headers={"Content-Type": "application/json"},
+            method="POST"
+        )
+        with urllib.request.urlopen(req, timeout=10) as response:
+            res_data = json.loads(response.read().decode('utf-8'))
+            reply = res_data['candidates'][0]['content']['parts'][0]['text']
+    except Exception as e:
+        reply = "Oops! Something went wrong in the system. Please try again later! 😊"
+
+    # Smart Booking Automation Parsing
+    if "[BOOK_ACTION]" in reply:
+        try:
+            parts = reply.split("[BOOK_ACTION]")
+            text_reply = parts[0].strip()
+            action_json_str = parts[1].strip()
+            action_data = json.loads(action_json_str)
+            
+            if request.user.is_authenticated:
+                loc_name = action_data.get("location_name")
+                slot_num = action_data.get("slot_number")
+                veh_num = action_data.get("vehicle_number", "NOT-PROVIDED")
+                b_date_str = action_data.get("date")
+                s_time_str = action_data.get("start_time")
+                e_time_str = action_data.get("end_time")
+                
+                from datetime import datetime, date
+                b_date = datetime.strptime(b_date_str, "%Y-%m-%d").date() if b_date_str else date.today()
+                s_time = datetime.strptime(s_time_str, "%H:%M").time()
+                e_time = datetime.strptime(e_time_str, "%H:%M").time()
+                
+                # Fetch slot
+                slot = ParkingSlot.objects.filter(
+                    location__name__icontains=loc_name,
+                    slot_number=slot_num
+                ).first()
+                
+                if slot:
+                    if slot.is_available:
+                        start = datetime.combine(b_date, s_time)
+                        end = datetime.combine(b_date, e_time)
+                        total_hours = (end - start).total_seconds() / 3600
+                        
+                        if total_hours > 0:
+                            booking = Booking.objects.create(
+                                user=request.user,
+                                slot=slot,
+                                vehicle_number=veh_num,
+                                booking_date=b_date,
+                                start_time=s_time,
+                                end_time=e_time,
+                                total_hours=round(total_hours, 2),
+                                total_amount=round(total_hours * 20, 2),
+                                status='PENDING'
+                            )
+                            reply = (
+                                f"{text_reply}\n\n"
+                                f"🎉 **Great news! I have successfully processed a pending booking for you!**\n"
+                                f"📍 **Location:** {slot.location.name}\n"
+                                f"🚗 **Slot Number:** {slot.slot_number}\n"
+                                f"💰 **Total Cost:** ₹{booking.total_amount} ({booking.total_hours} hours)\n\n"
+                                f"👉 [**Click here to complete your Payment**](/payment/{booking.id}/) to lock your spot!"
+                            )
+                        else:
+                            reply = "Invalid booking times provided. Please make sure the end time is after the start time!"
+                    else:
+                        reply = f"Ah, slot {slot_num} at {loc_name} is already booked. Could you please select another slot? 😊"
+                else:
+                    reply = f"I couldn't find slot {slot_num} at {loc_name} in our system. Please check available slots and try again! 😊"
+            else:
+                reply = f"{text_reply}\n\n⚠️ Please [**Login**](/accounts/login/) first to perform automated bookings! 😊"
+        except Exception as e:
+            pass
+        
+    return JsonResponse({"reply": reply})
