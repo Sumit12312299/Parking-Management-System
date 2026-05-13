@@ -309,7 +309,62 @@ def chatbot_api(request):
             res_data = json.loads(response.read().decode('utf-8'))
             reply = res_data['candidates'][0]['content']['parts'][0]['text']
     except Exception as e:
-        reply = "Oops! Something went wrong in the system. Please try again later! 😊"
+        # Smart rule-based fallback when Gemini API key fails or is rate-limited/leaked
+        msg_lower = user_message.lower()
+        if any(kw in msg_lower for kw in ["charge", "pricing", "price", "cost", "fee", "rate", "money", "rupee", "pay"]):
+            reply = (
+                "💰 **Parking Charges & Pricing:**\n\n"
+                f"{pricing_context}\n\n"
+                "To book a slot, go to your **Dashboard**, select a location, and select any available slot! 😊"
+            )
+        elif any(kw in msg_lower for kw in ["refund", "cancel", "policy"]):
+            reply = (
+                "🔄 **Refund & Cancellation Policy:**\n\n"
+                "Yes, bookings are **fully refundable**! "
+                "If you cancel an active booking from your 'My Bookings' page, a standard **10% cancellation fee** is applied, "
+                "and the remaining **90% is refunded instantly** to your account. 😊"
+            )
+        elif any(kw in msg_lower for kw in ["location", "avail", "slot", "where", "place", "mall", "hotel", "college", "office", "restaurant"]):
+            reply = (
+                "📍 **Real-time Parking Locations & Slot Availability:**\n\n"
+                f"{locations_context}\n\n"
+                "Click **Browse Locations** on the dashboard to see them on a map! 🚗"
+            )
+        elif any(kw in msg_lower for kw in ["book", "reserve", "how to"]):
+            reply = (
+                "🚗 **How to Book a Parking Slot:**\n\n"
+                "1. Go to the **Dashboard**.\n"
+                "2. Click **View Slots** or **Browse Locations** on your preferred venue.\n"
+                "3. Select any available green slot from the interactive visual map.\n"
+                "4. Enter your vehicle number, select the date, start time, and end time.\n"
+                "5. Complete the secure payment to lock your spot instantly! 🔒\n\n"
+                "Feel free to ask me any other questions! 😊"
+            )
+        elif any(kw in msg_lower for kw in ["hello", "hi", "hey", "greetings", "who are you", "bot"]):
+            reply = (
+                "👋 **Hello! I am ParkBot, your smart AI assistant for ParkKaro!**\n\n"
+                "I can help you check charges, find real-time available locations/slots, "
+                "explain our refund policy, or guide you through booking. How can I assist you today? 😊"
+            )
+        elif any(kw in msg_lower for kw in ["support", "contact", "phone", "email", "help", "care"]):
+            reply = (
+                "📞 **Customer Support & Help:**\n\n"
+                "Our premium customer support team is available 24/7!\n"
+                "- 📧 **Email:** support@parkkaro.com\n"
+                "- 📞 **Phone:** +91 98765 43210\n\n"
+                "Feel free to reach out to us if you need any manual assistance! 😊"
+            )
+        else:
+            reply = (
+                "👋 **I am ParkBot, your smart assistant!**\n\n"
+                "It looks like our AI is currently offline, but I can still assist you locally! "
+                "You can ask me about:\n"
+                "- 💰 **'Parking Charges'** or pricing\n"
+                "- 🔄 **'Refund Policy'** or cancellations\n"
+                "- 📍 **'Available Locations'** to see real-time slots\n"
+                "- 🚗 **'How to Book'** for a quick guide\n\n"
+                "How can I help you today? 😊"
+            )
 
     # Smart Booking Automation Parsing
     if "[BOOK_ACTION]" in reply:

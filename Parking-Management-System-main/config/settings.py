@@ -154,7 +154,7 @@ LOGOUT_REDIRECT_URL = 'login'
 LOGIN_URL = 'login'
 
 # Google Gemini API Key for Chatbot
-GEMINI_API_KEY = "AIzaSyBu-eelrllWBCcMJ4R33kffQ3tyDtxNSPc"
+GEMINI_API_KEY = "AIzaSyCUK9OmKCgkJU0j6V6_tn0XAeCwzr6UdXA"
 
 # Patch Django + Python 3.14 compatibility error globally
 try:
