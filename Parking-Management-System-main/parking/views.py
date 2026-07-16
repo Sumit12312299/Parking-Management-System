@@ -5,7 +5,6 @@ from django.db.models import Count
 from django.contrib.auth.decorators import login_required
 from .models import Location, ParkingSlot
 
-@login_required
 def dashboard(request):
     locations = Location.objects.all()
 
@@ -19,7 +18,7 @@ def dashboard(request):
         'locations': locations
     })
 
-@login_required
+
 def view_slots(request, location_id):
     location = Location.objects.get(id=location_id)
     slots = ParkingSlot.objects.filter(location=location)

@@ -12,6 +12,9 @@ def register_view(request):
     if request.method == "POST" and form.is_valid():
         user = form.save()
         login(request, user)
+        next_url = request.GET.get('next')
+        if next_url:
+            return redirect(next_url)
         return redirect('dashboard')
 
     return render(request, 'accounts/register.html', {'form': form})
@@ -27,6 +30,9 @@ def login_view(request):
 
         if user:
             login(request, user)
+            next_url = request.GET.get('next')
+            if next_url:
+                return redirect(next_url)
             return redirect('dashboard')
 
     return render(request, 'accounts/login.html', {'form': form})
