@@ -197,9 +197,9 @@
     }
 
     @keyframes floatIcon {
-        0% { transform: translateY(0); }
-        50% { transform: translateY(-6px); }
-        100% { transform: translateY(0); }
+        0% { transform: translateY(0); box-shadow: 0 10px 25px rgba(34, 197, 94, 0.4); }
+        50% { transform: translateY(-8px); box-shadow: 0 15px 35px rgba(34, 197, 94, 0.7); }
+        100% { transform: translateY(0); box-shadow: 0 10px 25px rgba(34, 197, 94, 0.4); }
     }
 
     .parkbot-btn {
@@ -546,6 +546,40 @@
                 scrollToBottom();
             }
 
+            function typewriteMessage(element, htmlContent, onComplete) {
+                let index = 0;
+                let currentText = '';
+                
+                function step() {
+                    if (index >= htmlContent.length) {
+                        element.innerHTML = htmlContent;
+                        if (onComplete) onComplete();
+                        return;
+                    }
+                    
+                    let char = htmlContent[index];
+                    if (char === '<') {
+                        let tagEnd = htmlContent.indexOf('>', index);
+                        if (tagEnd !== -1) {
+                            currentText += htmlContent.substring(index, tagEnd + 1);
+                            index = tagEnd + 1;
+                        } else {
+                            currentText += char;
+                            index++;
+                        }
+                    } else {
+                        currentText += char;
+                        index++;
+                    }
+                    
+                    element.innerHTML = currentText;
+                    scrollToBottom();
+                    setTimeout(step, 8 + Math.random() * 8);
+                }
+                
+                step();
+            }
+
             function getBotResponse(userMsg) {
                 if (!parkbotMessages) return;
 
@@ -573,15 +607,16 @@
                     botMsgDiv.className = 'message bot-message';
                     let answer = data.reply || "Oops, I didn't understand that. 😊";
                     
-                    // Simple markdown-to-html conversion for bold text and linebreaks
                     let formatted = answer.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
                     formatted = formatted.replace(/\n/g, '<br>');
-                    botMsgDiv.innerHTML = formatted;
-                    parkbotMessages.appendChild(botMsgDiv);
-                    saveMessage('bot', answer);
-                    scrollToBottom();
                     
-                    if (window.lucide) lucide.createIcons();
+                    botMsgDiv.innerHTML = '';
+                    parkbotMessages.appendChild(botMsgDiv);
+                    
+                    typewriteMessage(botMsgDiv, formatted, () => {
+                        saveMessage('bot', answer);
+                        if (window.lucide) lucide.createIcons();
+                    });
                 })
                 .catch(error => {
                     typingIndicator.remove();

@@ -15,7 +15,7 @@
 .premium-payment-card {
     background: white;
     width: 100%;
-    max-width: 450px;
+    max-width: 460px;
     border-radius: 24px;
     box-shadow: 0 20px 40px rgba(6, 78, 59, 0.08);
     position: relative;
@@ -75,7 +75,7 @@
 }
 
 .payment-form {
-    margin-top: 30px;
+    margin-top: 20px;
 }
 
 .payment-form label {
@@ -103,6 +103,164 @@
     border-color: #22c55e;
     background: white;
     box-shadow: 0 0 0 4px rgba(34, 197, 94, 0.1);
+}
+
+/* Tab Styles */
+.payment-tabs {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 25px;
+    background: #f3f4f6;
+    padding: 6px;
+    border-radius: 14px;
+}
+
+.payment-tab {
+    flex: 1;
+    padding: 10px 12px;
+    border-radius: 10px;
+    border: none;
+    background: transparent;
+    font-weight: 700;
+    font-size: 14px;
+    color: #4b5563;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.payment-tab.active {
+    background: white;
+    color: #16a34a;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+}
+
+/* Card Mockup Styles */
+.card-wrapper {
+    perspective: 1000px;
+    width: 100%;
+    margin-bottom: 25px;
+    display: none;
+}
+
+.card-mockup {
+    width: 100%;
+    height: 200px;
+    position: relative;
+    transform-style: preserve-3d;
+    transition: transform 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.card-mockup.flipped {
+    transform: rotateY(180deg);
+}
+
+.card-face {
+    position: absolute;
+    top: 0; left: 0; width: 100%; height: 100%;
+    backface-visibility: hidden;
+    border-radius: 20px;
+    padding: 24px;
+    color: white;
+    background: linear-gradient(135deg, #064e3b 0%, #15803d 100%);
+    box-shadow: 0 15px 30px rgba(6, 78, 59, 0.15);
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    box-sizing: border-box;
+}
+
+.card-back {
+    transform: rotateY(180deg);
+    background: linear-gradient(135deg, #15803d 0%, #022c22 100%);
+    padding: 0px;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+}
+
+.card-strip {
+    height: 45px;
+    background: #111;
+    width: 100%;
+    margin-top: 25px;
+}
+
+.card-signature-wrapper {
+    padding: 20px 24px;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.card-signature {
+    background: #e5e7eb;
+    height: 35px;
+    width: 75%;
+    display: inline-block;
+    vertical-align: middle;
+    border-radius: 4px;
+}
+
+.card-cvv-text {
+    width: 20%;
+    display: inline-block;
+    background: white;
+    color: black;
+    height: 35px;
+    line-height: 35px;
+    text-align: center;
+    vertical-align: middle;
+    font-weight: 800;
+    font-family: monospace;
+    font-size: 15px;
+    border-radius: 4px;
+    margin-left: 5%;
+}
+
+.card-chip {
+    width: 45px;
+    height: 32px;
+    background: linear-gradient(135deg, #fbbf24 0%, #d97706 100%);
+    border-radius: 6px;
+    position: relative;
+    overflow: hidden;
+}
+
+.card-chip::after {
+    content: '';
+    position: absolute;
+    width: 100%; height: 100%;
+    border: 1px solid rgba(255,255,255,0.25);
+    left: 0; top: 0;
+}
+
+.card-number {
+    font-size: 20px;
+    font-family: 'Courier New', Courier, monospace;
+    letter-spacing: 2px;
+    margin: 20px 0 10px 0;
+    text-shadow: 1px 1px 2px rgba(0,0,0,0.3);
+}
+
+.card-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.card-holder {
+    font-size: 13px;
+    text-transform: uppercase;
+    max-width: 75%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    letter-spacing: 1px;
+}
+
+.card-expiry {
+    font-size: 13px;
+    font-family: 'Courier New', Courier, monospace;
+    letter-spacing: 1px;
 }
 
 .btn-pay {
@@ -158,22 +316,6 @@
 
 @keyframes spin { 100% { transform: rotate(360deg); } }
 
-.success-checkmark {
-    width: 70px; height: 70px;
-    border-radius: 50%;
-    background: #22c55e;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    animation: popIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
-    box-shadow: 0 10px 20px rgba(34, 197, 94, 0.3);
-}
-
-@keyframes popIn {
-    0% { transform: scale(0); opacity: 0; }
-    100% { transform: scale(1); opacity: 1; }
-}
-
 .loading-text {
     margin-top: 20px;
     font-weight: 600;
@@ -183,6 +325,38 @@
 }
 
 @keyframes fadeIn { from{opacity:0;} to{opacity:1;} }
+
+/* Checkmark Success Animation */
+.checkmark-circle {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    stroke-width: 4;
+    stroke: #22c55e;
+    stroke-miterlimit: 10;
+    box-shadow: inset 0px 0px 0px #22c55e;
+    animation: fillCheck .4s ease-in-out .4s forwards, scaleCheck .3s ease-in-out .9s both;
+    display: block;
+    margin: 20px auto;
+}
+.checkmark-check {
+    transform-origin: 50% 50%;
+    stroke-dasharray: 48;
+    stroke-dashoffset: 48;
+    stroke: #fff;
+    animation: strokeDraw .3s cubic-bezier(0.65, 0, 0.45, 1) .8s forwards;
+}
+
+@keyframes strokeDraw {
+    100% { stroke-dashoffset: 0; }
+}
+@keyframes scaleCheck {
+    0%, 100% { transform: none; }
+    50% { transform: scale3d(1.1, 1.1, 1); }
+}
+@keyframes fillCheck {
+    100% { box-shadow: inset 0px 0px 0px 40px #22c55e; }
+}
 </style>
 
 <div class="payment-page-container">
@@ -244,12 +418,83 @@
                 <span class="amount">₹{{ booking.total_amount|floatformat:2 }}</span>
             </div>
 
+            <!-- Payment Tabs -->
+            <div class="payment-tabs">
+                <button type="button" class="payment-tab active" id="tabUpiBtn" onclick="switchTab('upi')">UPI ID</button>
+                <button type="button" class="payment-tab" id="tabCardBtn" onclick="switchTab('card')">Credit/Debit Card</button>
+            </div>
+
+            <!-- Card Mockup Preview -->
+            <div class="card-wrapper" id="cardWrapper">
+                <div class="card-mockup" id="cardMockup">
+                    <!-- Front Side -->
+                    <div class="card-face card-front">
+                        <div style="display:flex; justify-content:space-between; align-items:center;">
+                            <div class="card-chip"></div>
+                            <i data-lucide="nfc" style="width: 24px; height: 24px; opacity: 0.5;"></i>
+                        </div>
+                        <div class="card-number" id="previewCardNo">•••• •••• •••• ••••</div>
+                        <div class="card-footer">
+                            <div>
+                                <div style="font-size: 8px; opacity: 0.7; text-transform: uppercase;">Card Holder</div>
+                                <div class="card-holder" id="previewCardName">YOUR NAME</div>
+                            </div>
+                            <div style="text-align: right;">
+                                <div style="font-size: 8px; opacity: 0.7; text-transform: uppercase;">Expires</div>
+                                <div class="card-expiry" id="previewCardExpiry">MM/YY</div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Back Side -->
+                    <div class="card-face card-back">
+                        <div class="card-strip"></div>
+                        <div class="card-signature-wrapper">
+                            <div class="card-signature"></div>
+                            <div class="card-cvv-text" id="previewCardCvv">•••</div>
+                        </div>
+                        <div style="padding: 10px 24px; text-align: right; font-size: 10px; opacity: 0.5; font-weight: 600;">
+                            SECURE TRANSACTION
+                        </div>
+                    </div>
+                </div>
+            </div>
+
             <form method="POST" id="paymentForm" class="payment-form">
                 {% csrf_token %}
-                <label>Enter UPI ID</label>
-                <div style="position: relative;">
-                    <i data-lucide="smartphone" style="position: absolute; left: 16px; top: 14px; width: 20px; height: 20px; color: #9ca3af;"></i>
-                    <input type="text" name="upi_id" placeholder="example@okhdfcbank" required style="padding-left: 45px;">
+                
+                <!-- Active Payment Type Identifier -->
+                <input type="hidden" name="payment_method" id="paymentMethodInput" value="upi">
+
+                <!-- UPI Fields -->
+                <div id="upiFieldsBlock">
+                    <label>Enter UPI ID</label>
+                    <div style="position: relative; margin-bottom: 20px;">
+                        <i data-lucide="smartphone" style="position: absolute; left: 16px; top: 14px; width: 20px; height: 20px; color: #9ca3af;"></i>
+                        <input type="text" name="upi_id" id="upiIdField" placeholder="example@okhdfcbank" required style="padding-left: 45px;">
+                    </div>
+                </div>
+
+                <!-- Card Fields -->
+                <div id="cardFieldsBlock" style="display: none;">
+                    <label>Card Number</label>
+                    <div style="position: relative; margin-bottom: 15px;">
+                        <i data-lucide="credit-card" style="position: absolute; left: 16px; top: 14px; width: 20px; height: 20px; color: #9ca3af;"></i>
+                        <input type="text" id="cardNumberField" placeholder="4111 2222 3333 4444" maxlength="19" style="padding-left: 45px;" oninput="updateCardNumber(this)" onfocus="flipCard(false)">
+                    </div>
+
+                    <label>Card Holder Name</label>
+                    <input type="text" id="cardHolderField" placeholder="John Doe" maxlength="22" style="margin-bottom: 15px;" oninput="updateCardHolder(this)" onfocus="flipCard(false)">
+
+                    <div style="display: flex; gap: 15px; margin-bottom: 15px;">
+                        <div style="flex: 1;">
+                            <label>Expiry Date</label>
+                            <input type="text" id="cardExpiryField" placeholder="MM/YY" maxlength="5" oninput="updateCardExpiry(this)" onfocus="flipCard(false)">
+                        </div>
+                        <div style="flex: 1;">
+                            <label>CVV</label>
+                            <input type="password" id="cardCvvField" placeholder="•••" maxlength="3" oninput="updateCardCvv(this)" onfocus="flipCard(true)" onblur="flipCard(false)">
+                        </div>
+                    </div>
                 </div>
 
                 <button type="submit" class="btn-pay">
@@ -266,6 +511,149 @@
         lucide.createIcons();
     }
 
+    // --- Tab Switcher Logic ---
+    function switchTab(type) {
+        const upiBtn = document.getElementById('tabUpiBtn');
+        const cardBtn = document.getElementById('tabCardBtn');
+        const upiFields = document.getElementById('upiFieldsBlock');
+        const cardFields = document.getElementById('cardFieldsBlock');
+        const cardWrapper = document.getElementById('cardWrapper');
+        const methodInput = document.getElementById('paymentMethodInput');
+        const upiIdField = document.getElementById('upiIdField');
+
+        if(type === 'upi') {
+            upiBtn.classList.add('active');
+            cardBtn.classList.remove('active');
+            upiFields.style.display = 'block';
+            cardFields.style.display = 'none';
+            cardWrapper.style.display = 'none';
+            methodInput.value = 'upi';
+            upiIdField.required = true;
+        } else {
+            cardBtn.classList.add('active');
+            upiBtn.classList.remove('active');
+            upiFields.style.display = 'none';
+            cardFields.style.display = 'block';
+            cardWrapper.style.display = 'block';
+            methodInput.value = 'card';
+            upiIdField.required = false;
+        }
+    }
+
+    // --- Card Synchrony & Interactive Animations ---
+    function flipCard(shouldFlip) {
+        const mockup = document.getElementById('cardMockup');
+        if(shouldFlip) {
+            mockup.classList.add('flipped');
+        } else {
+            mockup.classList.remove('flipped');
+        }
+    }
+
+    function updateCardNumber(el) {
+        // Format input: add space every 4 digits
+        let value = el.value.replace(/\D/g, '');
+        let formatted = '';
+        for(let i = 0; i < value.length; i++) {
+            if(i > 0 && i % 4 === 0) formatted += ' ';
+            formatted += value[i];
+        }
+        el.value = formatted;
+
+        // Sync Preview
+        document.getElementById('previewCardNo').innerText = formatted || '•••• •••• •••• ••••';
+    }
+
+    function updateCardHolder(el) {
+        document.getElementById('previewCardName').innerText = el.value.toUpperCase() || 'YOUR NAME';
+    }
+
+    function updateCardExpiry(el) {
+        // Format expiry: add slash
+        let value = el.value.replace(/\D/g, '');
+        if(value.length > 2) {
+            el.value = value.substring(0, 2) + '/' + value.substring(2, 4);
+        } else {
+            el.value = value;
+        }
+        document.getElementById('previewCardExpiry').innerText = el.value || 'MM/YY';
+    }
+
+    function updateCardCvv(el) {
+        let value = el.value.replace(/\D/g, '');
+        el.value = value;
+        document.getElementById('previewCardCvv').innerText = value || '•••';
+    }
+
+    // --- Lightweight Canvas Confetti Generator ---
+    function startConfetti() {
+        const canvas = document.createElement('canvas');
+        canvas.style.position = 'fixed';
+        canvas.style.top = '0';
+        canvas.style.left = '0';
+        canvas.style.width = '100%';
+        canvas.style.height = '100%';
+        canvas.style.pointerEvents = 'none';
+        canvas.style.zIndex = '9999';
+        document.body.appendChild(canvas);
+
+        const ctx = canvas.getContext('2d');
+        let width = canvas.width = window.innerWidth;
+        let height = canvas.height = window.innerHeight;
+
+        const colors = ['#22c55e', '#16a34a', '#3b82f6', '#f59e0b', '#ef4444', '#ec4899'];
+        const particles = [];
+
+        for (let i = 0; i < 120; i++) {
+            particles.push({
+                x: Math.random() * width,
+                y: Math.random() * height - height,
+                r: Math.random() * 6 + 4,
+                d: Math.random() * height,
+                color: colors[Math.floor(Math.random() * colors.length)],
+                tilt: Math.random() * 10 - 5,
+                tiltAngleIncremental: Math.random() * 0.07 + 0.02,
+                tiltAngle: 0
+            });
+        }
+
+        function draw() {
+            ctx.clearRect(0, 0, width, height);
+            particles.forEach((p, idx) => {
+                p.tiltAngle += p.tiltAngleIncremental;
+                p.y += (Math.cos(p.d) + 3 + p.r / 2) / 2;
+                p.x += Math.sin(p.tiltAngle);
+                p.tilt = Math.sin(p.tiltAngle - idx / 3) * 15;
+
+                ctx.beginPath();
+                ctx.lineWidth = p.r;
+                ctx.strokeStyle = p.color;
+                ctx.moveTo(p.x + p.tilt + p.r / 2, p.y);
+                ctx.lineTo(p.x + p.tilt, p.y + p.tilt + p.r / 2);
+                ctx.stroke();
+            });
+
+            update();
+        }
+
+        let animationFrame;
+        function update() {
+            let remaining = false;
+            particles.forEach(p => {
+                if (p.y < height) remaining = true;
+            });
+
+            if (remaining) {
+                animationFrame = requestAnimationFrame(draw);
+            } else {
+                document.body.removeChild(canvas);
+            }
+        }
+
+        draw();
+    }
+
+    // --- AJAX Payment Submission ---
     const form = document.getElementById('paymentForm');
     const overlay = document.getElementById('paymentOverlay');
     const spinnerView = document.getElementById('spinnerView');
@@ -290,16 +678,19 @@
             });
 
             if (response.redirected) {
-                // Payment Success GPay Animation
+                // Payment Success GPay Animation & Confetti celebration
                 setTimeout(() => {
                     spinnerView.style.display = 'none';
                     successView.style.display = 'flex';
                     if(window.lucide) { lucide.createIcons(); }
                     
+                    // Trigger confetti!
+                    startConfetti();
+                    
                     setTimeout(() => {
                         window.location.href = response.url;
-                    }, 1800);
-                }, 1000); // Artificial delay to show processing
+                    }, 2500); // 2.5s delay to enjoy confetti and checkmark
+                }, 1200); 
                 
             } else {
                 // Failed payment

@@ -30,29 +30,45 @@
 }
 
 .history-card {
-    background: white;
+    background: radial-gradient(circle at 0px 50%, transparent 12px, #ffffff 12px),
+                radial-gradient(circle at 100% 50%, transparent 12px, #ffffff 12px) !important;
+    background-color: transparent !important;
     border-radius: 20px;
     padding: 25px 30px;
     box-shadow: 0 10px 30px rgba(0,0,0,0.04);
     display: flex;
     justify-content: space-between;
     align-items: stretch;
-    border: 1px solid #f3f4f6;
+    border: 1px solid #e5e7eb;
     transition: all 0.3s ease;
     position: relative;
-    overflow: hidden;
+    overflow: visible;
     width: 100%;
     max-width: none;
+    transform-origin: top;
+    opacity: 0;
+    animation: ticketRollDown 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
+
+@keyframes ticketRollDown {
+    0% { transform: scaleY(0); opacity: 0; }
+    100% { transform: scaleY(1); opacity: 1; }
+}
+
+.booking-cards .history-card:nth-child(1) { animation-delay: 0.1s; }
+.booking-cards .history-card:nth-child(2) { animation-delay: 0.2s; }
+.booking-cards .history-card:nth-child(3) { animation-delay: 0.3s; }
+.booking-cards .history-card:nth-child(4) { animation-delay: 0.4s; }
 
 .history-card::before {
     content: '';
     position: absolute;
     left: 0;
-    top: 0;
-    height: 100%;
+    top: 15px;
+    height: calc(100% - 30px);
     width: 6px;
     background: #22c55e;
+    border-radius: 0 4px 4px 0;
 }
 
 .history-card.status-cancelled::before {
@@ -60,8 +76,8 @@
 }
 
 .history-card:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 15px 35px rgba(0,0,0,0.08);
+    transform: translateY(-5px);
+    box-shadow: 0 20px 40px rgba(0,0,0,0.08);
 }
 
 .booking-content {
