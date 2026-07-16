@@ -194,10 +194,14 @@ def explore_locations(request):
     if area:
         locations = locations.filter(area=area)
 
-    
+    for location in locations:
+        location.available_slots = ParkingSlot.objects.filter(
+            location=location,
+            is_available=True
+        ).count()
+
     cities = Location.objects.values_list('city', flat=True).distinct()
 
-    
     if city:
         areas = Location.objects.filter(city=city).values_list('area', flat=True).distinct()
     else:
