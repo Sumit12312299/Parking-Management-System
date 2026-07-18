@@ -14,9 +14,19 @@ def dashboard(request):
             is_available=True
         ).count()
 
+    active_bookings = []
+    if request.user.is_authenticated:
+        from .models import Booking
+        active_bookings = Booking.objects.filter(
+            user=request.user,
+            status='ACTIVE'
+        ).select_related('slot', 'slot__location').order_by('-created_at')
+
     return render(request, 'parking/dashboard.html', {
-        'locations': locations
+        'locations': locations,
+        'active_bookings': active_bookings
     })
+
 
 
 def view_slots(request, location_id):
