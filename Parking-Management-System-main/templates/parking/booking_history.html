@@ -75,6 +75,10 @@
     background: #ef4444;
 }
 
+.history-card.status-pending::before {
+    background: #f59e0b;
+}
+
 .history-card:hover {
     transform: translateY(-5px);
     box-shadow: 0 20px 40px rgba(0,0,0,0.08);
@@ -188,6 +192,11 @@
 .status-badge.cancelled {
     background: #fee2e2;
     color: #991b1b;
+}
+
+.status-badge.pending {
+    background: #fef3c7;
+    color: #92400e;
 }
 
 .price-box {
@@ -377,7 +386,7 @@
     {% if bookings %}
     <div class="booking-cards reveal" style="transition-delay: 0.1s;">
         {% for booking in bookings %}
-        <div class="history-card {% if booking.status == 'CANCELLED' %}status-cancelled{% endif %}">
+        <div class="history-card {% if booking.status == 'CANCELLED' %}status-cancelled{% elif booking.status == 'PENDING' %}status-pending{% endif %}">
             
             <div class="booking-content">
                 <div class="booking-icon-wrapper">
@@ -427,6 +436,8 @@
             <div class="booking-actions">
                 {% if booking.status == 'ACTIVE' %}
                     <span class="status-badge active"><i data-lucide="check-circle-2" style="width: 14px; height: 14px;"></i> Active</span>
+                {% elif booking.status == 'PENDING' %}
+                    <span class="status-badge pending"><i data-lucide="clock" style="width: 14px; height: 14px;"></i> Pending Payment</span>
                 {% else %}
                     <span class="status-badge cancelled"><i data-lucide="x-circle" style="width: 14px; height: 14px;"></i> Cancelled</span>
                 {% endif %}
@@ -448,6 +459,10 @@
                                 <i data-lucide="x" style="width: 18px; height: 18px;"></i> Cancel
                             </button>
                         </div>
+                    {% elif booking.status == 'PENDING' %}
+                        <a href="{% url 'payment_page' booking.id %}" class="btn-cancel-modern" style="margin-top:15px; background:#fffbeb; color:#d97706; border:1px solid #f59e0b; display:inline-flex; align-items:center; justify-content:center; gap:6px; text-decoration:none; width:100%;">
+                            <i data-lucide="credit-card" style="width: 18px; height: 18px;"></i> Pay Now
+                        </a>
                     {% else %}
                         <span style="font-size: 13px; color: #6b7280; font-weight: 600; display: block; margin-top: 5px;">Refund Processed</span>
                     {% endif %}
