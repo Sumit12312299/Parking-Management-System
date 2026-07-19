@@ -142,7 +142,7 @@ def cancel_booking(request, booking_id):
 
     messages.success(request, f"Booking cancelled! ₹{cancellation_fee:.2f} cancellation fee applied. A refund of ₹{refund_amount:.2f} has been initiated to your account.")
 
-    return redirect('booking_history')
+    return redirect(request.META.get('HTTP_REFERER', 'booking_history'))
 
 from datetime import timedelta
 @login_required
@@ -165,7 +165,7 @@ def extend_booking(request, booking_id):
         
         messages.success(request, f"Time Extended by {hours_to_add} hour(s)! ₹{extra_charge} extra charge added. Your new time is updated.")
         
-    return redirect('booking_history')
+    return redirect(request.META.get('HTTP_REFERER', 'booking_history'))
 
 def verify_ticket(request, booking_id):
     # This view is public so security guards can scan the QR code without logging in.
