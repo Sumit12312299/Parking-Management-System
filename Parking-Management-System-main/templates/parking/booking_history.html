@@ -455,7 +455,7 @@
                                 <i data-lucide="clock" style="width: 18px; height: 18px;"></i> Extend
                             </button>
                             <button class="btn-cancel-modern" style="margin-top:0; flex:1;" 
-                                    data-cancel-url="{% url 'cancel_booking' booking.id %}" onclick="openRefundModal(this.getAttribute('data-cancel-url'), {{ booking.total_amount }})">
+                                    data-cancel-url="{% url 'cancel_booking' booking.id %}" data-amount="{{ booking.total_amount }}" onclick="openRefundModal(this.getAttribute('data-cancel-url'), this.getAttribute('data-amount'))">
                                 <i data-lucide="x" style="width: 18px; height: 18px;"></i> Cancel
                             </button>
                         </div>

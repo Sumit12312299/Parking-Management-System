@@ -832,7 +832,7 @@
                         <button class="btn-tracker btn-extend" data-extend-url="{% url 'extend_booking' booking.id %}" onclick="openExtendModal(this.getAttribute('data-extend-url'))">
                             <i data-lucide="clock" style="width:16px;height:16px;"></i> Extend Slot
                         </button>
-                        <button class="btn-tracker btn-cancel" data-cancel-url="{% url 'cancel_booking' booking.id %}" onclick="openRefundModal(this.getAttribute('data-cancel-url'), {{ booking.total_amount }})">
+                        <button class="btn-tracker btn-cancel" data-cancel-url="{% url 'cancel_booking' booking.id %}" data-amount="{{ booking.total_amount }}" onclick="openRefundModal(this.getAttribute('data-cancel-url'), this.getAttribute('data-amount'))">
                             <i data-lucide="x" style="width:16px;height:16px;"></i> Cancel Slot
                         </button>
                     </div>
