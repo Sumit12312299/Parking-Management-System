@@ -31,25 +31,22 @@
     {% block content %}{% endblock %}
 </div>
 <script src="https://unpkg.com/lucide@latest"></script>
-<script>
-  lucide.createIcons();
-</script>
-
 <footer class="footer-premium">
     <div class="footer-container">
 
         <div class="footer-brand">
-            <div class="logo" style="display:flex; align-items:center; gap:8px; margin-bottom: 20px; font-size:24px; font-weight:800; color:white;">
-                <i data-lucide="car-front" style="color:#22c55e;"></i>
+            <a href="{% url 'dashboard' %}" class="logo" style="text-decoration: none;">
+                <i data-lucide="car-front" style="color:#22c55e; width: 28px; height: 28px;"></i>
                 ParkKaro
-            </div>
-            <p style="color:#9ca3af; font-size:15px; line-height:1.6; max-width:300px;">
+            </a>
+            <p>
                 Smart parking solution for malls, colleges, offices and more. Book your spot before you arrive and save time.
             </p>
-            <div class="social-icons" style="display:flex; gap:15px; margin-top:20px;">
-                <a href="#" style="color:#9ca3af; transition:0.3s;"><i data-lucide="twitter" style="width:20px;"></i></a>
-                <a href="#" style="color:#9ca3af; transition:0.3s;"><i data-lucide="facebook" style="width:20px;"></i></a>
-                <a href="#" style="color:#9ca3af; transition:0.3s;"><i data-lucide="instagram" style="width:20px;"></i></a>
+            <div class="social-icons">
+                <a href="#" aria-label="Twitter"><i data-lucide="twitter" style="width:18px; height:18px;"></i></a>
+                <a href="#" aria-label="Facebook"><i data-lucide="facebook" style="width:18px; height:18px;"></i></a>
+                <a href="#" aria-label="Instagram"><i data-lucide="instagram" style="width:18px; height:18px;"></i></a>
+                <a href="#" aria-label="Linkedin"><i data-lucide="linkedin" style="width:18px; height:18px;"></i></a>
             </div>
         </div>
 
@@ -60,22 +57,42 @@
             <a href="{% url 'booking_history' %}">My Bookings</a>
         </div>
 
-        <div class="footer-contact">
-            <h4>Contact Us</h4>
-            <p style="display:flex; align-items:center; gap:10px; margin-bottom:10px; color:#9ca3af;"><i data-lucide="mail" style="width:16px; color:#22c55e;"></i> support@parkkaro.com</p>
-            <p style="display:flex; align-items:center; gap:10px; color:#9ca3af;"><i data-lucide="phone" style="width:16px; color:#22c55e;"></i> +91 98765 43210</p>
+        <div class="footer-links">
+            <h4>Support & Help</h4>
+            <a href="#">FAQ Center</a>
+            <a href="#">Support Ticket</a>
+            <a href="#">Security Guidelines</a>
+        </div>
+
+        <div class="footer-newsletter">
+            <h4>Stay Connected</h4>
+            <p>Subscribe to our newsletter for exclusive offers, updates, and smart city news.</p>
+            <form class="newsletter-form" onsubmit="event.preventDefault(); alert('Subscribed successfully!');">
+                <input type="email" placeholder="Your Email Address" required>
+                <button type="submit">Subscribe</button>
+            </form>
         </div>
 
     </div>
 
     <div class="footer-bottom">
-        <p>© 2026 ParkKaro. All rights reserved.</p>
+        <p>© 2026 ParkKaro. All rights reserved. Made for smart commuting.</p>
+        
+        <div class="back-to-top" onclick="window.scrollTo({top: 0, behavior: 'smooth'});" title="Back to Top">
+            <i data-lucide="chevron-up" style="width: 20px; height: 20px;"></i>
+        </div>
+
         <div class="bottom-links">
             <a href="#">Privacy Policy</a>
             <a href="#">Terms of Service</a>
         </div>
     </div>
 </footer>
+<script>
+    if (window.lucide) {
+        lucide.createIcons();
+    }
+</script>
 <script>
     function revealOnScroll() {
         const reveals = document.querySelectorAll(".reveal");
