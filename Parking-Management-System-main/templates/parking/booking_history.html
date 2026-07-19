@@ -451,11 +451,11 @@
                                 <i data-lucide="qr-code" style="width: 18px; height: 18px;"></i> Ticket
                             </button>
                             <button class="btn-cancel-modern" style="margin-top:0; background:#eff6ff; color:#2563eb; border:1px solid #2563eb; flex:1;"
-                                    onclick="openExtendModal('{% url 'extend_booking' booking.id %}')">
+                                    data-extend-url="{% url 'extend_booking' booking.id %}" onclick="openExtendModal(this.getAttribute('data-extend-url'))">
                                 <i data-lucide="clock" style="width: 18px; height: 18px;"></i> Extend
                             </button>
                             <button class="btn-cancel-modern" style="margin-top:0; flex:1;" 
-                                    onclick="openRefundModal('{% url 'cancel_booking' booking.id %}', {{ booking.total_amount }})">
+                                    data-cancel-url="{% url 'cancel_booking' booking.id %}" onclick="openRefundModal(this.getAttribute('data-cancel-url'), {{ booking.total_amount }})">
                                 <i data-lucide="x" style="width: 18px; height: 18px;"></i> Cancel
                             </button>
                         </div>

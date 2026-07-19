@@ -829,10 +829,10 @@
                         <button class="btn-tracker btn-ticket" onclick="openTicketModal('{{ booking.id }}', '{{ request.user.username|escapejs }}', '{{ booking.vehicle_number|escapejs }}', '{{ booking.slot.location.name|escapejs }}', '{{ booking.slot.slot_number }}', '{{ booking.start_time|time:'H:i' }} - {{ booking.end_time|time:'H:i' }}')">
                             <i data-lucide="qr-code" style="width:16px;height:16px;"></i> View Ticket
                         </button>
-                        <button class="btn-tracker btn-extend" onclick="openExtendModal('{% url 'extend_booking' booking.id %}')">
+                        <button class="btn-tracker btn-extend" data-extend-url="{% url 'extend_booking' booking.id %}" onclick="openExtendModal(this.getAttribute('data-extend-url'))">
                             <i data-lucide="clock" style="width:16px;height:16px;"></i> Extend Slot
                         </button>
-                        <button class="btn-tracker btn-cancel" onclick="openRefundModal('{% url 'cancel_booking' booking.id %}', {{ booking.total_amount }})">
+                        <button class="btn-tracker btn-cancel" data-cancel-url="{% url 'cancel_booking' booking.id %}" onclick="openRefundModal(this.getAttribute('data-cancel-url'), {{ booking.total_amount }})">
                             <i data-lucide="x" style="width:16px;height:16px;"></i> Cancel Slot
                         </button>
                     </div>
