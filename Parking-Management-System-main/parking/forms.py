@@ -12,3 +12,9 @@ class BookingForm(forms.ModelForm):
             'start_time': forms.TimeInput(attrs={'type': 'time'}),
             'end_time': forms.TimeInput(attrs={'type': 'time'}),
         }
+
+    def clean_vehicle_number(self):
+        vehicle_number = self.cleaned_data.get('vehicle_number', '').strip().upper()
+        if not vehicle_number:
+            raise forms.ValidationError("Vehicle number cannot be empty.")
+        return vehicle_number
