@@ -1,6 +1,11 @@
 # 🚗 ParkKaro - Smart Parking Management System
 
+![Django Version](https://img.shields.io/badge/Django-5.0.6-092E20?style=for-the-badge&logo=django)
+![Python Version](https://img.shields.io/badge/Python-3.10%2B-blue?style=for-the-badge&logo=python)
+![License](https://img.shields.io/badge/License-MIT-green?style=for-the-badge)
+
 ParkKaro is a modern, enterprise-grade, service-oriented smart parking application built using **Django 5.0.6**. It offers real-time booking tracking, location browsing, and automated reservation management. The front-end is designed with premium glassmorphism styling, clean micro-animations, responsive structures, and an AI-powered conversational assistant powered by Google Gemini.
+
 
 ---
 
