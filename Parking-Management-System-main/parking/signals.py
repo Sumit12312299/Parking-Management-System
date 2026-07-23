@@ -15,7 +15,7 @@ def create_parking_slots(sender, instance, created, **kwargs):
             'COMMERCIAL': 120,
         }
 
-        total_slots = slot_count_map.get(instance.location_type, 50)
+        total_slots = slot_count_map.get(str(instance.location_type).upper(), 50)
 
         for i in range(1, total_slots + 1):
             ParkingSlot.objects.create(
