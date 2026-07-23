@@ -78,16 +78,23 @@ python manage.py runserver
 ```
 Visit the local server at `http://127.0.0.1:8000/` in your browser.
 
+### 6. Run Automated Unit Tests
+```bash
+python manage.py test
+```
+Runs the full suite of unit tests for model validation, slot availability logic, and user authentication views.
+
 ---
 
 ## 📂 Project Structure
 
 ```
-├── accounts/               # User authentication, registration, login views
-├── parking/                # Booking engine, slot management, and AI Chatbot
-├── templates/              # HTML layout templates
+├── accounts/               # User authentication, registration, login views & custom admin
+├── parking/                # Booking engine, slot management, unit tests & AI Chatbot
+├── templates/              # HTML layout templates (including custom 404 & 500 error pages)
 ├── static/                 # CSS styling sheets, images, and JS
 ├── config/                 # Base Django project configuration settings
+├── .env.example            # Environment variables configuration template
 └── manage.py               # Django utility script
 ```
 
@@ -95,3 +102,4 @@ Visit the local server at `http://127.0.0.1:8000/` in your browser.
 
 ## 📝 License
 Distributed under the MIT License. See `LICENSE` for more information.
+
