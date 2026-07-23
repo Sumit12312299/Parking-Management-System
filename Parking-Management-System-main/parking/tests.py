@@ -50,3 +50,23 @@ class ParkingModelTests(TestCase):
         self.assertEqual(str(booking), "testdriver - A-101 (DL-01-AB-1234)")
         self.assertEqual(booking.status, 'ACTIVE')
         self.assertEqual(booking.total_amount, 100.0)
+        self.assertTrue(booking.is_active)
+
+    def test_booking_inactive_status(self):
+        today = datetime.date.today()
+        booking = Booking.objects.create(
+            user=self.user,
+            slot=self.slot,
+            vehicle_number='DL-01-AB-1234',
+            booking_date=today,
+            start_time=datetime.time(10, 0),
+            end_time=datetime.time(12, 0),
+            status='CANCELLED'
+        )
+        self.assertFalse(booking.is_active)
+
+    def test_location_slots_relationship(self):
+        self.assertGreater(self.location.slots.count(), 0)
+        self.assertIn(self.slot, self.location.slots.all())
+
+
